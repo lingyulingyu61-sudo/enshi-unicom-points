@@ -88,6 +88,13 @@ mark{background:var(--highlight);color:#333;padding:0 2px;border-radius:2px}
 .rule-label{display:inline-block;font-size:12px;color:#888;margin-right:6px;font-weight:bold}
 /* Calculator */
 .calc-card{background:#fff;border-radius:12px;box-shadow:var(--card-shadow);padding:24px;margin-bottom:20px}
+.product-hint{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#e3f2fd 0%,#f0f7ff 100%);border:1px solid #90caf9;border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:14px;animation:hintSlide .3s ease}
+.product-hint-icon{font-size:18px}
+.product-hint-text{flex:1;color:#1565c0;font-weight:500}
+.product-hint-close{cursor:pointer;color:#999;font-size:14px;padding:2px 6px;border-radius:4px;transition:all .2s}
+.product-hint-close:hover{background:rgba(0,0,0,.08);color:#333}
+@keyframes hintSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.calc-select.calc-preset{border-color:var(--unicom-red);box-shadow:0 0 0 3px rgba(230,0,18,.1)}
 .calc-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
 .calc-field{flex:1;min-width:200px}
 .calc-label{font-size:14px;font-weight:500;color:#555;margin-bottom:6px;display:block}
@@ -197,6 +204,11 @@ mark{background:var(--highlight);color:#333;padding:0 2px;border-radius:2px}
   <!-- 积分计算器 -->
   <div class="tab-content" id="tab-calculator">
     <div class="section-title">积分计算器</div>
+    <div class="product-hint" id="productHint" style="display:none;">
+      <span class="product-hint-icon">📦</span>
+      <span class="product-hint-text" id="productHintText"></span>
+      <span class="product-hint-close" id="productHintClose">✕</span>
+    </div>
     <div class="calc-card">
       <div class="calc-row">
         <div class="calc-field">
@@ -1224,7 +1236,8 @@ function renderProducts(){
   filtered.forEach(function(p){
     var catClass=catMap[p.category]||'';
     var marginClass=marginMap[p.margin_range]||'';
-    html+='<tr class="clickable" data-calc-type="'+getCalcTypeForProduct(p)+'">';
+    var ct=getCalcTypeForProduct(p);
+    html+='<tr class="clickable" data-calc-type="'+ct+'" data-product-name="'+escapeHtml(p.name)+'">';
     html+='<td>'+p.id+'</td>';
     html+='<td style="font-weight:500;">'+highlight(p.name,kwOriginal)+'</td>';
     html+='<td style="color:#888;">'+highlight(p.remark||'-',kwOriginal)+'</td>';
@@ -1240,7 +1253,8 @@ function renderProducts(){
   filtered.forEach(function(p){
     var catClass=catMap[p.category]||'';
     var marginClass=marginMap[p.margin_range]||'';
-    cardHtml+='<div class="product-card" data-calc-type="'+getCalcTypeForProduct(p)+'">';
+    var ct=getCalcTypeForProduct(p);
+    cardHtml+='<div class="product-card" data-calc-type="'+ct+'" data-product-name="'+escapeHtml(p.name)+'">';
     cardHtml+='<div class="product-card-name">'+highlight(p.name,kwOriginal)+'</div>';
     cardHtml+='<div class="product-card-row"><span>编码: '+highlight(p.product_code||'-',kwOriginal)+'</span><span><span class="cat-badge '+catClass+'">'+catFullMap[p.category]+'</span></span></div>';
     cardHtml+='<div class="product-card-row"><span>毛利率: <span class="margin-badge '+marginClass+'">'+p.margin_range+'</span></span></div>';
@@ -1252,11 +1266,23 @@ function renderProducts(){
   document.querySelectorAll('[data-calc-type]').forEach(function(el){
     el.addEventListener('click',function(){
       var ct=this.getAttribute('data-calc-type');
+      var pName=this.getAttribute('data-product-name')||'';
       if(ct){
         switchTab('calculator');
-        document.getElementById('calcType').value=ct;
+        var sel=document.getElementById('calcType');
+        sel.value=ct;
+        sel.classList.add('calc-preset');
         updateCalcForm();
-        showToast('已切换到积分计算器');
+        // 显示产品提示条
+        var hint=document.getElementById('productHint');
+        var hintText=document.getElementById('productHintText');
+        var selOption=sel.options[sel.selectedIndex];
+        var typeLabel=selOption?selOption.text:'';
+        hintText.textContent='当前产品：'+pName+'  →  业务类型：'+typeLabel;
+        hint.style.display='flex';
+        showToast('已选择「'+pName+'」，跳转积分计算器');
+      }else{
+        showToast('该产品暂无对应的计算器类型');
       }
     });
   });
@@ -1348,7 +1374,17 @@ document.getElementById('collapseAllBtn').addEventListener('click',function(){
 });
 
 // ===== 计算器表单 =====
-document.getElementById('calcType').addEventListener('change',updateCalcForm);
+document.getElementById('calcType').addEventListener('change',function(){
+  // 手动切换时移除预选高亮和产品提示
+  this.classList.remove('calc-preset');
+  document.getElementById('productHint').style.display='none';
+  updateCalcForm();
+});
+// 关闭产品提示条
+document.getElementById('productHintClose').addEventListener('click',function(){
+  document.getElementById('productHint').style.display='none';
+  document.getElementById('calcType').classList.remove('calc-preset');
+});
 
 function updateCalcForm(){
   var type=document.getElementById('calcType').value;
