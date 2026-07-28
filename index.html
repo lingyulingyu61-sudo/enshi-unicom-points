@@ -1270,7 +1270,10 @@ function renderProducts(){
       if(ct){
         switchTab('calculator');
         var sel=document.getElementById('calcType');
-        sel.value=ct;
+        // 确保下拉框正确选中
+        for(var i=0;i<sel.options.length;i++){
+          if(sel.options[i].value===ct){sel.selectedIndex=i;break;}
+        }
         sel.classList.add('calc-preset');
         updateCalcForm();
         // 显示产品提示条
@@ -1281,6 +1284,11 @@ function renderProducts(){
         hintText.textContent='当前产品：'+pName+'  →  业务类型：'+typeLabel;
         hint.style.display='flex';
         showToast('已选择「'+pName+'」，跳转积分计算器');
+        // 滚动到表单区域
+        setTimeout(function(){
+          var formArea=document.getElementById('calcFormArea');
+          if(formArea&&formArea.innerHTML){formArea.scrollIntoView({behavior:'smooth',block:'start'});}
+        },150);
       }else{
         showToast('该产品暂无对应的计算器类型');
       }
