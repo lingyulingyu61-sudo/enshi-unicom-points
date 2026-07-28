@@ -26,8 +26,13 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-ser
 .section-title{font-size:22px;font-weight:bold;color:var(--unicom-dark);margin-bottom:16px;padding-left:12px;border-left:4px solid var(--unicom-red)}
 /* Stats */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--card-shadow);text-align:center;transition:transform .2s}
+.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:var(--card-shadow);text-align:center;transition:all .2s}
 .stat-card:hover{transform:translateY(-2px)}
+.stat-card.clickable{cursor:pointer;position:relative;overflow:hidden}
+.stat-card.clickable:hover{box-shadow:0 4px 16px rgba(230,0,18,.15);border:1px solid rgba(230,0,18,.2)}
+.stat-card.clickable.active{background:linear-gradient(135deg,var(--unicom-red) 0%,#c5000f 100%);color:#fff;box-shadow:0 4px 16px rgba(230,0,18,.25)}
+.stat-card.clickable.active .stat-num{color:#fff}
+.stat-card.clickable.active .stat-label{color:rgba(255,255,255,.85)}
 .stat-num{font-size:32px;font-weight:bold;color:var(--unicom-red)}
 .stat-label{font-size:13px;color:#888;margin-top:4px}
 /* Search */
@@ -1105,27 +1110,45 @@ function renderProductStats(){
   products.forEach(function(p){cats[p.category]=(cats[p.category]||0)+1;});
   var html='<div class="stat-card"><div class="stat-num">'+products.length+'</div><div class="stat-label">产品总数</div></div>';
   Object.keys(cats).forEach(function(c){
-    html+='<div class="stat-card"><div class="stat-num">'+cats[c]+'</div><div class="stat-label">'+catFullMap[c]+'</div></div>';
+    var activeCls=activeCategory===c?' active':'';
+    html+='<div class="stat-card clickable'+activeCls+'" data-cat="'+c+'"><div class="stat-num">'+cats[c]+'</div><div class="stat-label">'+catFullMap[c]+'</div></div>';
   });
   var count=(html.match(/stat-card/g)||[]).length;
   for(var i=count;i<4;i++){html+='<div class="stat-card"><div class="stat-num">-</div><div class="stat-label">-</div></div>';}
   document.getElementById('productStats').innerHTML=html;
+  // 绑定分类卡片点击事件
+  document.querySelectorAll('#productStats .stat-card.clickable').forEach(function(card){
+    card.addEventListener('click',function(){
+      var cat=this.getAttribute('data-cat');
+      setCategory(cat);
+    });
+  });
 }
 
 // ===== 分类筛选 =====
+function setCategory(cat){
+  activeCategory=cat;
+  // 更新分类卡片选中状态
+  document.querySelectorAll('#productStats .stat-card.clickable').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('data-cat')===cat);
+  });
+  // 更新筛选 chips 选中状态
+  document.querySelectorAll('#categoryFilters .filter-chip').forEach(function(el){
+    el.classList.toggle('active',el.getAttribute('data-cat')===cat);
+  });
+  renderProducts();
+  // 滚动到筛选/列表区域，方便查看结果
+  var target=document.getElementById('categoryFilters');
+  if(target)target.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function renderCategoryFilters(){
   var cats=[];
   APP_DATA.products.forEach(function(p){if(cats.indexOf(p.category)===-1)cats.push(p.category);});
-  var html='<div class="filter-chip active" data-cat="all">全部</div>';
-  cats.forEach(function(c){html+='<div class="filter-chip" data-cat="'+c+'">'+catFullMap[c]+'</div>';});
+  var html='<div class="filter-chip'+(activeCategory==='all'?' active':'')+'" data-cat="all">全部</div>';
+  cats.forEach(function(c){html+='<div class="filter-chip'+(activeCategory===c?' active':'')+'" data-cat="'+c+'">'+catFullMap[c]+'</div>';});
   document.getElementById('categoryFilters').innerHTML=html;
   document.querySelectorAll('#categoryFilters .filter-chip').forEach(function(chip){
-    chip.addEventListener('click',function(){
-      document.querySelectorAll('#categoryFilters .filter-chip').forEach(function(el){el.classList.remove('active');});
-      this.classList.add('active');
-      activeCategory=this.getAttribute('data-cat');
-      renderProducts();
-    });
+    chip.addEventListener('click',function(){setCategory(this.getAttribute('data-cat'));renderProductStats();});
   });
 }
 
