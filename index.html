@@ -210,15 +210,17 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
   .guide-section{padding:18px}
 }
 /* Assistant */
-.assistant-float{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);box-shadow:0 6px 20px rgba(230,0,18,0.35);cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;border:3px solid #fff}
+.assistant-float{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);box-shadow:0 6px 20px rgba(230,0,18,0.35);cursor:grab;z-index:200;display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;border:3px solid #fff;touch-action:none;user-select:none}
 .assistant-float:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 8px 28px rgba(230,0,18,0.45)}
-.assistant-float img{width:42px;height:42px;object-fit:contain;border-radius:50%}
+.assistant-float.dragging{cursor:grabbing;transition:none;transform:none}
+.assistant-float img{width:42px;height:42px;object-fit:contain;border-radius:50%;pointer-events:none}
 .assistant-float .assistant-pulse{position:absolute;width:100%;height:100%;border-radius:50%;background:rgba(230,0,18,0.25);animation:assistantPulse 2s infinite;z-index:-1}
 @keyframes assistantPulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.6);opacity:0}}
 .assistant-window{position:fixed;right:22px;bottom:92px;width:360px;max-width:calc(100vw - 44px);height:520px;max-height:calc(100vh - 120px);background:#fff;border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.18);z-index:201;display:none;flex-direction:column;overflow:hidden;animation:assistantSlide .25s ease;border:1px solid var(--border-color)}
 .assistant-window.open{display:flex}
 @keyframes assistantSlide{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.assistant-header{background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.assistant-header{background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:grab;touch-action:none;user-select:none}
+.assistant-header.dragging{cursor:grabbing}
 .assistant-header img{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);object-fit:contain;background:#fff}
 .assistant-header-title{flex:1}
 .assistant-header-title .name{font-size:15px;font-weight:700}
@@ -1930,10 +1932,66 @@ function toggleAssistant(open){
   assistantOpen=open;
   if(open)setTimeout(function(){document.getElementById('assistantInput').focus();},100);
 }
-document.getElementById('assistantFloat').addEventListener('click',function(){toggleAssistant(true);});
 document.getElementById('assistantClose').addEventListener('click',function(){toggleAssistant(false);});
 document.getElementById('assistantSend').addEventListener('click',function(){sendAssistantQuestion();});
 document.getElementById('assistantInput').addEventListener('keydown',function(e){if(e.key==='Enter')sendAssistantQuestion();});
+// 通用拖拽：区分点击与拖拽，拖拽时不触发点击
+function makeDraggable(el,opts){
+  opts=opts||{};
+  var onDragStart=opts.onDragStart||function(){};
+  var onClick=opts.onClick||function(){};
+  var dragHandle=opts.handle||el;
+  var dragging=false,startX=0,startY=0,origX=0,origY=0,moved=false;
+  var DRAG_THRESHOLD=5;
+  function getPoint(e){return e.touches&&e.touches[0]?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
+  function onStart(e){
+    var pt=getPoint(e);startX=pt.x;startY=pt.y;moved=false;
+    var rect=el.getBoundingClientRect();origX=rect.left;origY=rect.top;
+    dragging=true;
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onEnd);
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onEnd);
+  }
+  function onMove(e){
+    if(!dragging)return;
+    var pt=getPoint(e);
+    var dx=pt.x-startX,dy=pt.y-startY;
+    if(!moved&&Math.abs(dx)<DRAG_THRESHOLD&&Math.abs(dy)<DRAG_THRESHOLD)return;
+    if(!moved){moved=true;el.classList.add('dragging');onDragStart();}
+    if(e.cancelable)e.preventDefault();
+    var nx=origX+dx,ny=origY+dy;
+    // 边界约束
+    var w=el.offsetWidth,h=el.offsetHeight;
+    nx=Math.max(4,Math.min(nx,window.innerWidth-w-4));
+    ny=Math.max(4,Math.min(ny,window.innerHeight-h-4));
+    el.style.left=nx+'px';el.style.top=ny+'px';
+    el.style.right='auto';el.style.bottom='auto';
+  }
+  function onEnd(){
+    dragging=false;
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onEnd);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onEnd);
+    el.classList.remove('dragging');
+    // 未移动视为点击
+    if(!moved){onClick();}
+    moved=false;
+  }
+  dragHandle.addEventListener('mousedown',onStart);
+  dragHandle.addEventListener('touchstart',onStart,{passive:false});
+}
+// 悬浮按钮：拖拽移动 + 点击打开
+var floatBtn=document.getElementById('assistantFloat');
+makeDraggable(floatBtn,{onClick:function(){toggleAssistant(true);}});
+// 聊天窗口：通过 header 拖拽移动整个窗口
+var winEl=document.getElementById('assistantWindow');
+var headerEl=winEl.querySelector('.assistant-header');
+makeDraggable(winEl,{handle:headerEl,onClick:function(){},onDragStart:function(){
+  // 拖拽开始时把 right/bottom 转为 left/top
+  if(winEl.style.left===''){var r=winEl.getBoundingClientRect();winEl.style.left=r.left+'px';winEl.style.top=r.top+'px';winEl.style.right='auto';winEl.style.bottom='auto';}
+}});
 document.getElementById('assistantQuick').addEventListener('click',function(e){
   var chip=e.target.closest('.assistant-quick-chip');
   if(chip){
