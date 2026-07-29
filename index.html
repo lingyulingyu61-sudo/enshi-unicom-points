@@ -292,7 +292,13 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 [data-theme="dark"] .rule-item{border-color:#2a2a3e}
 [data-theme="dark"] .rule-item-detail{background:rgba(230,0,18,0.1)}
 [data-theme="dark"] .sim-item{background:#1e1e30;border-color:#333}
-[data-theme="dark"] .compare-panel{background:#1e1e30}
+[data-theme="dark"] .cmp-slot{background:#1e1e30;border-color:#444}
+[data-theme="dark"] .cmp-search{background:#1e1e30;border-color:#444;color:#e0e0e0}
+[data-theme="dark"] .cmp-search-results{background:#1e1e30;border-color:#444}
+[data-theme="dark"] .cmp-search-item{border-color:#2a2a3e}
+[data-theme="dark"] .cmp-search-item:hover{background:#2a1525}
+[data-theme="dark"] .cmp-table td:first-child{background:#181830}
+[data-theme="dark"] .cmp-table-wrap{border-color:#444}
 [data-theme="dark"] .autocomplete-list{background:#1e1e30;border-color:#444}
 [data-theme="dark"] .autocomplete-item:hover{background:#2a2a3e}
 /* ===== Theme Toggle ===== */
@@ -353,17 +359,83 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .compare-btn:hover{background:var(--unicom-red-dark)}
 .compare-btn:disabled{background:#ccc;cursor:not-allowed}
 .compare-clear{font-size:12px;color:var(--text-muted);cursor:pointer;text-decoration:underline}
-.compare-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
-.compare-panel.show{display:flex}
-.compare-panel-content{background:#fff;border-radius:var(--radius);max-width:800px;width:100%;max-height:80vh;overflow-y:auto;padding:24px}
-.compare-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.compare-panel-title{font-size:18px;font-weight:700}
-.compare-panel-close{width:30px;height:30px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
-.compare-table{width:100%;border-collapse:collapse}
-.compare-table th{background:var(--unicom-dark);color:#fff;padding:10px 14px;font-size:13px;text-align:center}
-.compare-table td{padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:13px;text-align:center}
-.compare-table tr:hover td{background:#fafbfc}
 .compare-checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--unicom-red)}
+/* Compare open button in product section */
+.compare-open-btn{padding:8px 18px;background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;transition:var(--transition);font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(230,0,18,0.2)}
+.compare-open-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(230,0,18,0.3)}
+.compare-open-btn .co-badge{background:#fff;color:var(--unicom-red);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;min-width:18px;text-align:center}
+/* Full-screen compare panel */
+.cmp-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:300;display:none;opacity:0;transition:opacity .25s}
+.cmp-overlay.show{display:flex;opacity:1}
+.cmp-panel{background:var(--bg-solid,#fff);width:100%;max-width:1100px;margin:auto;max-height:100vh;overflow-y:auto;border-radius:0;animation:cmpSlide .3s ease;display:flex;flex-direction:column}
+@keyframes cmpSlide{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(min-width:769px){.cmp-panel{border-radius:16px;max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,0.25)}}
+[data-theme="dark"] .cmp-panel{background:#1a1a2e}
+.cmp-header{position:sticky;top:0;background:linear-gradient(135deg,var(--unicom-dark) 0%,#16213e 100%);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;z-index:10;box-shadow:0 2px 12px rgba(0,0,0,0.15)}
+.cmp-header-left{display:flex;align-items:center;gap:12px}
+.cmp-header-icon{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:20px}
+.cmp-title{font-size:19px;font-weight:700}
+.cmp-subtitle{font-size:12px;opacity:.65;margin-top:2px}
+.cmp-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:var(--transition);border:none}
+.cmp-close:hover{background:rgba(255,255,255,0.25);transform:rotate(90deg)}
+.cmp-body{padding:24px;flex:1}
+/* Product picker */
+.cmp-picker{margin-bottom:20px}
+.cmp-picker-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cmp-search-wrap{position:relative;margin-bottom:14px}
+.cmp-search{width:100%;padding:12px 16px 12px 42px;border:2px solid var(--border-color);border-radius:var(--radius-sm);font-size:14px;outline:none;transition:var(--transition);background:#fff;color:var(--text-primary)}
+.cmp-search:focus{border-color:var(--unicom-red);box-shadow:0 0 0 3px rgba(230,0,18,0.08)}
+[data-theme="dark"] .cmp-search{background:#1e1e30;border-color:#444;color:#e0e0e0}
+.cmp-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.4;pointer-events:none}
+.cmp-search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--border-color);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:20;max-height:260px;overflow-y:auto;display:none}
+[data-theme="dark"] .cmp-search-results{background:#1e1e30;border-color:#444}
+.cmp-search-results.show{display:block}
+.cmp-search-item{padding:10px 16px;cursor:pointer;font-size:13px;border-bottom:1px solid #f5f5f5;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+[data-theme="dark"] .cmp-search-item{border-color:#2a2a3e}
+.cmp-search-item:last-child{border-bottom:none}
+.cmp-search-item:hover{background:#fff5f5}
+[data-theme="dark"] .cmp-search-item:hover{background:#2a1525}
+.cmp-search-item.added{opacity:.4;cursor:default}
+.cmp-search-item .csi-name{font-weight:500;color:var(--text-primary)}
+.cmp-search-item .csi-cat{font-size:11px;color:var(--text-muted)}
+.cmp-search-item .csi-add{color:var(--unicom-red);font-size:16px;font-weight:700}
+/* Selected product cards */
+.cmp-slots{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.cmp-slot{flex:1;min-width:160px;max-width:240px;background:#fff;border:2px solid var(--border-color);border-radius:var(--radius);padding:14px;position:relative;transition:var(--transition)}
+[data-theme="dark"] .cmp-slot{background:#1e1e30;border-color:#444}
+.cmp-slot.filled{border-color:var(--unicom-red);box-shadow:0 2px 12px rgba(230,0,18,0.08)}
+.cmp-slot.empty{border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:90px;color:var(--text-muted);font-size:13px;flex-direction:column;gap:4px}
+.cmp-slot.empty .cmp-slot-num{font-size:24px;opacity:.3}
+.cmp-slot-remove{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--unicom-red);color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:var(--transition);box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+.cmp-slot-remove:hover{transform:scale(1.15)}
+.cmp-slot-name{font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:8px;line-height:1.4}
+.cmp-slot-cat{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:6px}
+.cmp-slot-margin{font-size:12px;color:var(--text-muted)}
+/* Comparison table */
+.cmp-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border-color)}
+.cmp-table{width:100%;border-collapse:collapse;min-width:500px}
+.cmp-table th{background:var(--unicom-dark);color:#fff;padding:12px 16px;font-size:13px;text-align:center;font-weight:600;position:sticky;top:0;z-index:5}
+.cmp-table th:first-child{text-align:left;background:#0d0d1a;min-width:100px}
+.cmp-table td{padding:12px 16px;border-bottom:1px solid var(--border-color);font-size:13px;text-align:center;color:var(--text-primary)}
+.cmp-table td:first-child{text-align:left;font-weight:600;background:#f8f9fa;color:var(--text-secondary);white-space:nowrap}
+[data-theme="dark"] .cmp-table td:first-child{background:#181830}
+.cmp-table tbody tr:hover td{background:#fafbfc}
+[data-theme="dark"] .cmp-table tbody tr:hover td{background:#1e1e30}
+.cmp-table tbody tr:hover td:first-child{background:#f0f2f8}
+[data-theme="dark"] .cmp-table tbody tr:hover td:first-child{background:#181830}
+.cmp-table .cmp-diff{background:#fff8e1 !important;font-weight:600}
+[data-theme="dark"] .cmp-table .cmp-diff{background:#2a2410 !important}
+.cmp-table .cmp-diff:first-child{background:#f5f5f5 !important}
+[data-theme="dark"] .cmp-table .cmp-diff:first-child{background:#181830 !important}
+.cmp-table .cat-badge{font-size:11px;padding:2px 8px;border-radius:4px}
+.cmp-table .margin-badge{font-size:11px;padding:2px 8px;border-radius:4px}
+/* Empty state */
+.cmp-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.cmp-empty-icon{font-size:56px;opacity:.2;margin-bottom:16px}
+.cmp-empty-title{font-size:17px;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
+.cmp-empty-desc{font-size:13px;line-height:1.8;max-width:400px;margin:0 auto}
+.cmp-empty-btn{margin-top:20px;padding:10px 28px;background:var(--unicom-red);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;cursor:pointer;font-weight:500;transition:var(--transition)}
+.cmp-empty-btn:hover{background:var(--unicom-red-dark);transform:translateY(-2px)}
 /* ===== Rule Go Calc ===== */
 .rule-go-calc{display:inline-block;margin-top:8px;padding:4px 12px;background:var(--unicom-blue);color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:var(--transition);font-weight:500}
 .rule-go-calc:hover{background:#005bb5;transform:translateY(-1px)}
@@ -432,6 +504,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       </div>
       <button class="search-btn" id="searchBtn">搜索</button>
       <button class="btn-outline" id="clearSearchBtn">清除</button>
+      <button class="compare-open-btn" id="compareOpenBtn">⚖ 对比 <span class="co-badge" id="coBadge">0</span></button>
     </div>
     <div class="filter-row" id="categoryFilters"></div>
     <!-- 收藏夹 -->
@@ -757,7 +830,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       </div>
       <div class="guide-step">
         <div class="guide-step-num">4</div>
-        <div class="guide-step-body"><b>产品对比</b>：勾选产品列表右侧的「对比」复选框（最多3个），然后点击「开始对比」按钮，弹出对比面板横向展示差异。</div>
+        <div class="guide-step-body"><b>产品对比</b>：点击搜索栏旁的 <span class="guide-tag guide-tag-red">⚖ 对比</span> 按钮打开专属对比面板。在面板内直接搜索产品名称即可添加到对比（支持 2-4 个），对比表自动标黄差异项，一眼看出不同。也可在产品列表勾选「对比」复选框快速添加。</div>
       </div>
       <div class="guide-step">
         <div class="guide-step-num">5</div>
@@ -794,13 +867,21 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 <div class="toast" id="toast"></div>
 
 <!-- 对比弹窗 -->
-<div class="compare-panel" id="comparePanel">
-  <div class="compare-panel-content">
-    <div class="compare-panel-header">
-      <div class="compare-panel-title">产品对比</div>
-      <div class="compare-panel-close" id="comparePanelClose">✕</div>
+<div class="cmp-overlay" id="comparePanel">
+  <div class="cmp-panel">
+    <div class="cmp-header">
+      <div class="cmp-header-left">
+        <div class="cmp-header-icon">⚖</div>
+        <div>
+          <div class="cmp-title">产品对比</div>
+          <div class="cmp-subtitle">选择 2-4 个产品横向对比关键属性，差异自动高亮</div>
+        </div>
+      </div>
+      <button class="cmp-close" id="comparePanelClose">✕</button>
     </div>
-    <div id="compareTableWrap"></div>
+    <div class="cmp-body" id="cmpBody">
+      <!-- 动态渲染 -->
+    </div>
   </div>
 </div>
 
@@ -2634,15 +2715,22 @@ function renderFavorites(){
 
 // ===== 产品对比 =====
 var compareList=[];
+var CMP_MAX=4;
 function toggleCompare(id,checked){
   if(checked){
-    if(compareList.length>=3){showToast('最多对比3个产品');renderProducts();return;}
-    compareList.push(id);
+    if(compareList.length>=CMP_MAX){showToast('最多对比'+CMP_MAX+'个产品');renderProducts();return;}
+    if(compareList.indexOf(id)===-1)compareList.push(id);
   }else{
     var idx=compareList.indexOf(id);
     if(idx!==-1)compareList.splice(idx,1);
   }
   renderCompareBar();
+  updateCompareBadge();
+  if(document.getElementById('comparePanel').classList.contains('show'))renderComparePanel();
+}
+function updateCompareBadge(){
+  var badge=document.getElementById('coBadge');
+  if(badge)badge.textContent=compareList.length;
 }
 function renderCompareBar(){
   var bar=document.getElementById('compareBar');
@@ -2652,38 +2740,161 @@ function renderCompareBar(){
   btn.disabled=compareList.length<2;
   bar.classList.toggle('show',compareList.length>0);
 }
-document.getElementById('compareBtn').addEventListener('click',function(){
-  if(compareList.length<2)return;
-  var html='<table class="compare-table"><thead><tr><th>属性</th>';
+function openComparePanel(){
+  document.getElementById('comparePanel').classList.add('show');
+  renderComparePanel();
+}
+function renderComparePanel(){
+  var body=document.getElementById('cmpBody');
+  if(compareList.length===0){
+    body.innerHTML='<div class="cmp-empty">'+
+      '<div class="cmp-empty-icon">⚖</div>'+
+      '<div class="cmp-empty-title">还没有选择对比产品</div>'+
+      '<div class="cmp-empty-desc">在下方搜索框中输入产品名称，点击搜索结果即可添加到对比。<br>支持同时对比 2-'+CMP_MAX+' 个产品的关键属性，差异自动高亮标黄。</div>'+
+      '</div>';
+    renderCmpPicker(body);
+    return;
+  }
+  // Slots
+  var slotsHtml='<div class="cmp-picker"><div class="cmp-picker-label">已选产品（'+compareList.length+'/'+CMP_MAX+'）</div><div class="cmp-slots">';
+  for(var i=0;i<CMP_MAX;i++){
+    if(i<compareList.length){
+      var p=APP_DATA.products.find(function(x){return x.id===compareList[i];});
+      if(p){
+        var catClass=catMap[p.category]||'';
+        var marginClass=marginMap[p.margin_range]||'';
+        slotsHtml+='<div class="cmp-slot filled">';
+        slotsHtml+='<div class="cmp-slot-remove" onclick="cmpRemove('+p.id+')">✕</div>';
+        slotsHtml+='<div class="cmp-slot-name">'+escapeHtml(p.name)+'</div>';
+        slotsHtml+='<span class="cmp-slot-cat cat-badge '+catClass+'">'+catFullMap[p.category]+'</span>';
+        slotsHtml+='<div class="cmp-slot-margin">毛利率: <span class="margin-badge '+marginClass+'">'+p.margin_range+'</span></div>';
+        slotsHtml+='</div>';
+      }
+    }else{
+      slotsHtml+='<div class="cmp-slot empty"><div class="cmp-slot-num">+</div><div>添加产品</div></div>';
+    }
+  }
+  slotsHtml+='</div></div>';
+  // Comparison table
+  var rows=[
+    {label:'大类',key:'category',map:true,type:'cat'},
+    {label:'毛利率',key:'margin_range',type:'margin'},
+    {label:'商品编码',key:'product_code'},
+    {label:'备注',key:'remark'},
+    {label:'积分规则',key:'_rule'},
+    {label:'可计算',key:'_calc',type:'calc'}
+  ];
+  // Pre-compute values to detect differences
+  var rowData=[];
+  rows.forEach(function(row){
+    var vals=compareList.map(function(id){
+      var p=APP_DATA.products.find(function(x){return x.id===id;});
+      if(!p)return '-';
+      if(row.key==='_rule')return getPointsRuleForProduct(p);
+      if(row.key==='_calc'){var ct=getCalcTypeForProduct(p);return ct?'✓ 支持':'— 无';}
+      return row.map?(catFullMap[p[row.key]]||'-'):(p[row.key]||'-');
+    });
+    var allSame=vals.every(function(v){return v===vals[0];});
+    rowData.push({row:row,vals:vals,diff:!allSame});
+  });
+  var tableHtml='<div class="cmp-table-wrap"><table class="cmp-table"><thead><tr><th>属性</th>';
   compareList.forEach(function(id){
     var p=APP_DATA.products.find(function(x){return x.id===id;});
-    if(p)html+='<th>'+escapeHtml(p.name)+'</th>';
+    tableHtml+='<th>'+(p?escapeHtml(p.name):'-')+'</th>';
   });
-  html+='</tr></thead><tbody>';
-  var rows=[
-    {label:'序号',key:'id'},
-    {label:'备注',key:'remark'},
-    {label:'毛利率',key:'margin_range'},
-    {label:'商品编码',key:'product_code'},
-    {label:'大类',key:'category',map:true},
-    {label:'积分规则',key:'_rule'}
-  ];
-  rows.forEach(function(row){
-    html+='<tr><td style="font-weight:600;text-align:left;">'+row.label+'</td>';
-    compareList.forEach(function(id){
-      var p=APP_DATA.products.find(function(x){return x.id===id;});
-      if(!p){html+='<td>-</td>';return;}
-      var val=row.key==='_rule'?getPointsRuleForProduct(p):(row.map?catFullMap[p[row.key]]||'-':p[row.key]||'-');
-      html+='<td>'+escapeHtml(val)+'</td>';
+  tableHtml+='</tr></thead><tbody>';
+  rowData.forEach(function(rd){
+    tableHtml+='<tr>';
+    tableHtml+='<td'+(rd.diff?' class="cmp-diff"':'')+'>'+rd.row.label+(rd.diff?' <span style="color:var(--unicom-red);font-size:11px;">⚡差异</span>':'')+'</td>';
+    rd.vals.forEach(function(val,idx){
+      var p=APP_DATA.products.find(function(x){return x.id===compareList[idx];});
+      var cellContent=val;
+      if(rd.row.type==='cat'&&p){
+        var catClass=catMap[p.category]||'';
+        cellContent='<span class="cat-badge '+catClass+'">'+val+'</span>';
+      }else if(rd.row.type==='margin'&&p){
+        var marginClass=marginMap[p.margin_range]||'';
+        cellContent='<span class="margin-badge '+marginClass+'">'+val+'</span>';
+      }else if(rd.row.type==='calc'){
+        cellContent=val.indexOf('✓')!==-1?'<span style="color:#2e7d32;font-weight:600;">'+val+'</span>':'<span style="color:#999;">'+val+'</span>';
+      }
+      tableHtml+='<td'+(rd.diff?' class="cmp-diff"':'')+'>'+cellContent+'</td>';
     });
-    html+='</tr>';
+    tableHtml+='</tr>';
   });
-  html+='</tbody></table>';
-  document.getElementById('compareTableWrap').innerHTML=html;
-  document.getElementById('comparePanel').classList.add('show');
-});
+  tableHtml+='</tbody></table></div>';
+  body.innerHTML=slotsHtml+tableHtml;
+  renderCmpPicker(body);
+}
+function renderCmpPicker(parent){
+  var pickerHtml='<div class="cmp-picker" style="margin-top:20px;">';
+  pickerHtml+='<div class="cmp-picker-label">🔍 添加产品到对比</div>';
+  pickerHtml+='<div class="cmp-search-wrap">';
+  pickerHtml+='<span class="cmp-search-icon">🔍</span>';
+  pickerHtml+='<input type="text" class="cmp-search" id="cmpSearch" placeholder="输入产品名称或编码搜索并添加..." '+(compareList.length>=CMP_MAX?'disabled':'')+'>';
+  pickerHtml+='<div class="cmp-search-results" id="cmpSearchResults"></div>';
+  pickerHtml+='</div></div>';
+  parent.insertAdjacentHTML('beforeend',pickerHtml);
+  if(compareList.length>=CMP_MAX){
+    document.getElementById('cmpSearch').placeholder='已达到最大对比数量（'+CMP_MAX+'个）';
+    return;
+  }
+  var cmpSearch=document.getElementById('cmpSearch');
+  var cmpResults=document.getElementById('cmpSearchResults');
+  cmpSearch.addEventListener('input',function(){
+    var kw=this.value.trim().toLowerCase();
+    if(!kw){cmpResults.classList.remove('show');return;}
+    var matches=APP_DATA.products.filter(function(p){
+      return p.name.toLowerCase().indexOf(kw)!==-1||(p.product_code||'').toLowerCase().indexOf(kw)!==-1||(p.remark||'').toLowerCase().indexOf(kw)!==-1;
+    }).slice(0,10);
+    if(matches.length===0){cmpResults.classList.remove('show');return;}
+    var html='';
+    matches.forEach(function(p){
+      var isAdded=compareList.indexOf(p.id)!==-1;
+      var catClass=catMap[p.category]||'';
+      html+='<div class="cmp-search-item'+(isAdded?' added':'')+'" data-cmp-pid="'+p.id+'">';
+      html+='<div><div class="csi-name">'+highlight(p.name,this.value.trim())+'</div>';
+      html+='<div class="csi-cat">'+catFullMap[p.category]+' · '+(p.product_code||'-')+'</div></div>';
+      html+='<div class="csi-add">'+(isAdded?'✓':'+')+'</div>';
+      html+='</div>';
+    }.bind(this));
+    cmpResults.innerHTML=html;
+    cmpResults.classList.add('show');
+    cmpResults.querySelectorAll('.cmp-search-item').forEach(function(item){
+      item.addEventListener('click',function(){
+        if(this.classList.contains('added'))return;
+        var pid=parseInt(this.getAttribute('data-cmp-pid'));
+        if(compareList.indexOf(pid)===-1&&compareList.length<CMP_MAX){
+          compareList.push(pid);
+          renderCompareBar();
+          updateCompareBadge();
+          renderProducts();
+          renderComparePanel();
+          var p=APP_DATA.products.find(function(x){return x.id===pid;});
+          showToast('已添加「'+p.name+'」到对比');
+        }
+      });
+    });
+  }.bind(cmpSearch));
+  cmpSearch.addEventListener('blur',function(){setTimeout(function(){cmpResults.classList.remove('show');},200);});
+  cmpSearch.addEventListener('focus',function(){if(this.value.trim())this.dispatchEvent(new Event('input'));});
+}
+function cmpRemove(id){
+  var idx=compareList.indexOf(id);
+  if(idx!==-1){
+    var p=APP_DATA.products.find(function(x){return x.id===id;});
+    compareList.splice(idx,1);
+    renderCompareBar();
+    updateCompareBadge();
+    renderProducts();
+    renderComparePanel();
+    if(p)showToast('已移除「'+p.name+'」');
+  }
+}
+document.getElementById('compareOpenBtn').addEventListener('click',openComparePanel);
+document.getElementById('compareBtn').addEventListener('click',openComparePanel);
 document.getElementById('compareClearBtn').addEventListener('click',function(){
-  compareList=[];renderCompareBar();renderProducts();
+  compareList=[];renderCompareBar();updateCompareBadge();renderProducts();renderComparePanel();
 });
 document.getElementById('comparePanelClose').addEventListener('click',function(){
   document.getElementById('comparePanel').classList.remove('show');
@@ -2858,6 +3069,7 @@ renderRules();
 renderCoefficients();
 renderHistory();
 renderFavorites();
+updateCompareBadge();
 
 // 恢复上次浏览的Tab
 try{
