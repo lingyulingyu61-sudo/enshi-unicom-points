@@ -294,9 +294,11 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 [data-theme="dark"] .sim-item{background:#1e1e30;border-color:#333}
 [data-theme="dark"] .cmp-slot{background:#1e1e30;border-color:#444}
 [data-theme="dark"] .cmp-search{background:#1e1e30;border-color:#444;color:#e0e0e0}
-[data-theme="dark"] .cmp-search-results{background:#1e1e30;border-color:#444}
-[data-theme="dark"] .cmp-search-item{border-color:#2a2a3e}
-[data-theme="dark"] .cmp-search-item:hover{background:#2a1525}
+[data-theme="dark"] .cmp-list-scroll{background:#1e1e30;border-color:#444}
+[data-theme="dark"] .cmp-cat-header{background:rgba(230,0,18,0.1);border-color:#2a2a3e}
+[data-theme="dark"] .cmp-list-item{border-color:#2a2a3e}
+[data-theme="dark"] .cmp-list-item:hover{background:#2a1525}
+[data-theme="dark"] .cmp-list-item.selected{background:rgba(230,0,18,0.12)}
 [data-theme="dark"] .cmp-table td:first-child{background:#181830}
 [data-theme="dark"] .cmp-table-wrap{border-color:#444}
 [data-theme="dark"] .autocomplete-list{background:#1e1e30;border-color:#444}
@@ -387,18 +389,29 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .cmp-search:focus{border-color:var(--unicom-red);box-shadow:0 0 0 3px rgba(230,0,18,0.08)}
 [data-theme="dark"] .cmp-search{background:#1e1e30;border-color:#444;color:#e0e0e0}
 .cmp-search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.4;pointer-events:none}
-.cmp-search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--border-color);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:20;max-height:260px;overflow-y:auto;display:none}
-[data-theme="dark"] .cmp-search-results{background:#1e1e30;border-color:#444}
-.cmp-search-results.show{display:block}
-.cmp-search-item{padding:10px 16px;cursor:pointer;font-size:13px;border-bottom:1px solid #f5f5f5;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
-[data-theme="dark"] .cmp-search-item{border-color:#2a2a3e}
-.cmp-search-item:last-child{border-bottom:none}
-.cmp-search-item:hover{background:#fff5f5}
-[data-theme="dark"] .cmp-search-item:hover{background:#2a1525}
-.cmp-search-item.added{opacity:.4;cursor:default}
-.cmp-search-item .csi-name{font-weight:500;color:var(--text-primary)}
-.cmp-search-item .csi-cat{font-size:11px;color:var(--text-muted)}
-.cmp-search-item .csi-add{color:var(--unicom-red);font-size:16px;font-weight:700}
+/* Category-grouped selectable product list */
+.cmp-list-scroll{max-height:360px;overflow-y:auto;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:#fff}
+[data-theme="dark"] .cmp-list-scroll{background:#1e1e30;border-color:#444}
+.cmp-list-scroll::-webkit-scrollbar{width:6px}
+.cmp-list-scroll::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+.cmp-cat-group{margin-bottom:0}
+.cmp-cat-header{padding:8px 14px;font-size:12px;font-weight:700;color:var(--text-secondary);background:rgba(230,0,18,0.04);border-bottom:1px solid var(--border-color);display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:2}
+[data-theme="dark"] .cmp-cat-header{background:rgba(230,0,18,0.1);border-color:#2a2a3e}
+.cmp-cat-count{font-size:11px;color:var(--text-muted);font-weight:400}
+.cmp-list-item{padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;gap:10px;transition:background .12s}
+[data-theme="dark"] .cmp-list-item{border-color:#2a2a3e}
+.cmp-list-item:last-child{border-bottom:none}
+.cmp-list-item:hover{background:#fff5f5}
+[data-theme="dark"] .cmp-list-item:hover{background:#2a1525}
+.cmp-list-item.selected{background:rgba(230,0,18,0.06)}
+[data-theme="dark"] .cmp-list-item.selected{background:rgba(230,0,18,0.12)}
+.cmp-list-item.disabled{opacity:.4;cursor:not-allowed}
+.cmp-list-item.disabled:hover{background:transparent}
+.cmp-list-cb{width:18px;height:18px;cursor:pointer;accent-color:var(--unicom-red);flex-shrink:0}
+.cmp-list-info{flex:1;min-width:0}
+.cmp-list-name{font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp-list-code{font-size:11px;color:var(--text-muted);margin-top:2px}
+.cmp-list-empty{padding:24px;text-align:center;color:var(--text-muted);font-size:13px}
 /* Selected product cards */
 .cmp-slots{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
 .cmp-slot{flex:1;min-width:160px;max-width:240px;background:#fff;border:2px solid var(--border-color);border-radius:var(--radius);padding:14px;position:relative;transition:var(--transition)}
@@ -2716,6 +2729,8 @@ function renderFavorites(){
 // ===== 产品对比 =====
 var compareList=[];
 var CMP_MAX=4;
+var cmpFilterValue='';
+var cmpScrollTop=0;
 function toggleCompare(id,checked){
   if(checked){
     if(compareList.length>=CMP_MAX){showToast('最多对比'+CMP_MAX+'个产品');renderProducts();return;}
@@ -2750,7 +2765,7 @@ function renderComparePanel(){
     body.innerHTML='<div class="cmp-empty">'+
       '<div class="cmp-empty-icon">⚖</div>'+
       '<div class="cmp-empty-title">还没有选择对比产品</div>'+
-      '<div class="cmp-empty-desc">在下方搜索框中输入产品名称，点击搜索结果即可添加到对比。<br>支持同时对比 2-'+CMP_MAX+' 个产品的关键属性，差异自动高亮标黄。</div>'+
+      '<div class="cmp-empty-desc">在下方列表中勾选产品即可添加到对比，也可用筛选框快速定位。<br>支持同时对比 2-'+CMP_MAX+' 个产品的关键属性，差异自动高亮标黄。</div>'+
       '</div>';
     renderCmpPicker(body);
     return;
@@ -2827,57 +2842,96 @@ function renderComparePanel(){
   renderCmpPicker(body);
 }
 function renderCmpPicker(parent){
+  var maxed=compareList.length>=CMP_MAX;
   var pickerHtml='<div class="cmp-picker" style="margin-top:20px;">';
-  pickerHtml+='<div class="cmp-picker-label">🔍 添加产品到对比</div>';
+  pickerHtml+='<div class="cmp-picker-label">📋 选择产品添加到对比'+(maxed?' <span style="color:var(--unicom-red);font-size:12px;">（已达上限 '+CMP_MAX+' 个）</span>':'')+'</div>';
   pickerHtml+='<div class="cmp-search-wrap">';
   pickerHtml+='<span class="cmp-search-icon">🔍</span>';
-  pickerHtml+='<input type="text" class="cmp-search" id="cmpSearch" placeholder="输入产品名称或编码搜索并添加..." '+(compareList.length>=CMP_MAX?'disabled':'')+'>';
-  pickerHtml+='<div class="cmp-search-results" id="cmpSearchResults"></div>';
-  pickerHtml+='</div></div>';
+  pickerHtml+='<input type="text" class="cmp-search" id="cmpFilter" placeholder="输入关键词筛选产品..." '+(maxed?'disabled':'')+'>';
+  pickerHtml+='</div>';
+  pickerHtml+='<div class="cmp-list-scroll" id="cmpListScroll"></div>';
+  pickerHtml+='</div>';
   parent.insertAdjacentHTML('beforeend',pickerHtml);
-  if(compareList.length>=CMP_MAX){
-    document.getElementById('cmpSearch').placeholder='已达到最大对比数量（'+CMP_MAX+'个）';
+  var filterInput=document.getElementById('cmpFilter');
+  if(filterInput){
+    filterInput.value=cmpFilterValue;
+    filterInput.addEventListener('input',function(){
+      cmpFilterValue=this.value;
+      cmpScrollTop=0;
+      renderCmpList(this.value.trim());
+    });
+  }
+  renderCmpList(cmpFilterValue);
+  var scrollEl=document.getElementById('cmpListScroll');
+  if(scrollEl)scrollEl.scrollTop=cmpScrollTop;
+}
+function renderCmpList(keyword){
+  var scroll=document.getElementById('cmpListScroll');
+  if(!scroll)return;
+  var kw=(keyword||'').trim().toLowerCase();
+  var maxed=compareList.length>=CMP_MAX;
+  var groups={};
+  var order=[];
+  APP_DATA.products.forEach(function(p){
+    if(kw){
+      var match=p.name.toLowerCase().indexOf(kw)!==-1||
+        (p.product_code||'').toLowerCase().indexOf(kw)!==-1||
+        (p.remark||'').toLowerCase().indexOf(kw)!==-1;
+      if(!match)return;
+    }
+    var cat=p.category||'其他';
+    if(!groups[cat]){groups[cat]=[];order.push(cat);}
+    groups[cat].push(p);
+  });
+  if(order.length===0){
+    scroll.innerHTML='<div class="cmp-list-empty">没有匹配「'+escapeHtml(keyword||'')+'」的产品</div>';
     return;
   }
-  var cmpSearch=document.getElementById('cmpSearch');
-  var cmpResults=document.getElementById('cmpSearchResults');
-  cmpSearch.addEventListener('input',function(){
-    var kw=this.value.trim().toLowerCase();
-    if(!kw){cmpResults.classList.remove('show');return;}
-    var matches=APP_DATA.products.filter(function(p){
-      return p.name.toLowerCase().indexOf(kw)!==-1||(p.product_code||'').toLowerCase().indexOf(kw)!==-1||(p.remark||'').toLowerCase().indexOf(kw)!==-1;
-    }).slice(0,10);
-    if(matches.length===0){cmpResults.classList.remove('show');return;}
-    var html='';
-    matches.forEach(function(p){
-      var isAdded=compareList.indexOf(p.id)!==-1;
-      var catClass=catMap[p.category]||'';
-      html+='<div class="cmp-search-item'+(isAdded?' added':'')+'" data-cmp-pid="'+p.id+'">';
-      html+='<div><div class="csi-name">'+highlight(p.name,this.value.trim())+'</div>';
-      html+='<div class="csi-cat">'+catFullMap[p.category]+' · '+(p.product_code||'-')+'</div></div>';
-      html+='<div class="csi-add">'+(isAdded?'✓':'+')+'</div>';
+  var html='';
+  order.forEach(function(cat){
+    var catName=catFullMap[cat]||cat;
+    var catClass=catMap[cat]||'';
+    html+='<div class="cmp-cat-group">';
+    html+='<div class="cmp-cat-header"><span class="cat-badge '+catClass+'" style="font-size:11px;">'+catName+'</span><span class="cmp-cat-count">'+groups[cat].length+' 个产品</span></div>';
+    groups[cat].forEach(function(p){
+      var selected=compareList.indexOf(p.id)!==-1;
+      var disabled=!selected&&maxed;
+      html+='<div class="cmp-list-item'+(selected?' selected':'')+(disabled?' disabled':'')+'" data-cmp-pid="'+p.id+'">';
+      html+='<input type="checkbox" class="cmp-list-cb" '+(selected?'checked':'')+(disabled?' disabled':'')+'>';
+      html+='<div class="cmp-list-info"><div class="cmp-list-name">'+escapeHtml(p.name)+'</div>';
+      html+='<div class="cmp-list-code">'+(p.product_code||'—')+'</div></div>';
       html+='</div>';
-    }.bind(this));
-    cmpResults.innerHTML=html;
-    cmpResults.classList.add('show');
-    cmpResults.querySelectorAll('.cmp-search-item').forEach(function(item){
-      item.addEventListener('click',function(){
-        if(this.classList.contains('added'))return;
-        var pid=parseInt(this.getAttribute('data-cmp-pid'));
-        if(compareList.indexOf(pid)===-1&&compareList.length<CMP_MAX){
-          compareList.push(pid);
-          renderCompareBar();
-          updateCompareBadge();
-          renderProducts();
-          renderComparePanel();
-          var p=APP_DATA.products.find(function(x){return x.id===pid;});
-          showToast('已添加「'+p.name+'」到对比');
-        }
-      });
     });
-  }.bind(cmpSearch));
-  cmpSearch.addEventListener('blur',function(){setTimeout(function(){cmpResults.classList.remove('show');},200);});
-  cmpSearch.addEventListener('focus',function(){if(this.value.trim())this.dispatchEvent(new Event('input'));});
+    html+='</div>';
+  });
+  scroll.innerHTML=html;
+  scroll.querySelectorAll('.cmp-list-item').forEach(function(item){
+    item.addEventListener('click',function(e){
+      if(this.classList.contains('disabled')){e.preventDefault();return;}
+      var pid=parseInt(this.getAttribute('data-cmp-pid'));
+      var idx=compareList.indexOf(pid);
+      // Save scroll position before re-render
+      var scrollEl=document.getElementById('cmpListScroll');
+      if(scrollEl)cmpScrollTop=scrollEl.scrollTop;
+      if(idx!==-1){
+        var p=APP_DATA.products.find(function(x){return x.id===pid;});
+        compareList.splice(idx,1);
+        renderCompareBar();
+        updateCompareBadge();
+        renderProducts();
+        renderComparePanel();
+        if(p)showToast('已移除「'+p.name+'」');
+      }else if(compareList.length<CMP_MAX){
+        compareList.push(pid);
+        renderCompareBar();
+        updateCompareBadge();
+        renderProducts();
+        renderComparePanel();
+        var p=APP_DATA.products.find(function(x){return x.id===pid;});
+        if(p)showToast('已添加「'+p.name+'」到对比');
+      }
+    });
+  });
 }
 function cmpRemove(id){
   var idx=compareList.indexOf(id);
