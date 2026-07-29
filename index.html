@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#E60012">
+<meta name="description" content="恩施联通政企积分查询系统 - 产品积分规则查询、积分计算器、渠道系数计算">
+<link rel="manifest" href="manifest.json">
 <title>恩施联通政企积分查询系统</title>
 <style>
 :root{
@@ -248,36 +251,186 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .assistant-send:disabled{background:#ccc;cursor:not-allowed}
 @media(max-width:768px){
   .assistant-window{width:calc(100vw - 32px);right:16px;bottom:86px;height:calc(100vh - 110px)}
-  .assistant-float{right:16px;bottom:16px;width:54px;height:54px}
+  .assistant-float{right:16px;bottom:72px;width:54px;height:54px}
   .assistant-float img{width:36px;height:36px}
 }
+/* ===== Dark Mode ===== */
+[data-theme="dark"]{
+  --unicom-gray:#1a1a2e;--bg-gradient:linear-gradient(180deg,#0f0f1a 0%,#1a1a2e 100%);
+  --text-primary:#e0e0e0;--text-secondary:#aaa;--text-muted:#777;
+  --border-color:#333;--card-shadow:0 2px 12px rgba(0,0,0,0.3);--card-shadow-hover:0 8px 28px rgba(0,0,0,0.4);
+  --highlight:#5d4e1a;
+}
+[data-theme="dark"] body{background:var(--bg-gradient);color:var(--text-primary)}
+[data-theme="dark"] .nav{background:#1e1e30;border-color:#333}
+[data-theme="dark"] .stat-card,[data-theme="dark"] .calc-card,[data-theme="dark"] .guide-section,
+[data-theme="dark"] .product-table,[data-theme="dark"] .coeff-table,[data-theme="dark"] .rule-group{background:#1e1e30}
+[data-theme="dark"] .product-table th,[data-theme="dark"] .coeff-table th,[data-theme="dark"] .rule-group-header{background:#0d0d1a}
+[data-theme="dark"] .product-table td,[data-theme="dark"] .coeff-table td{border-color:#2a2a3e}
+[data-theme="dark"] .product-table tbody tr:nth-child(even),[data-theme="dark"] .coeff-table tbody tr:nth-child(even){background:#181830}
+[data-theme="dark"] .product-table tbody tr:hover,[data-theme="dark"] .coeff-table tbody tr:hover,[data-theme="dark"] .product-table tr.clickable:hover{background:#2a1525}
+[data-theme="dark"] .rule-item-standard{background:#1a1a2e;border-color:var(--unicom-red);color:#ccc}
+[data-theme="dark"] .rule-item-example{background:#2a2410;color:#ccc}
+[data-theme="dark"] .rule-item-scope,[data-theme="dark"] .rule-item-note{color:#999}
+[data-theme="dark"] .calc-input,[data-theme="dark"] .calc-select,[data-theme="dark"] .search-input,
+[data-theme="dark"] .assistant-input{background:#1a1a2e;border-color:#444;color:#e0e0e0}
+[data-theme="dark"] .calc-input:focus,[data-theme="dark"] .calc-select:focus,[data-theme="dark"] .search-input:focus{border-color:var(--unicom-red)}
+[data-theme="dark"] .filter-chip,[data-theme="dark"] .btn-outline{background:#1e1e30;border-color:#444;color:#aaa}
+[data-theme="dark"] .filter-chip:hover{border-color:var(--unicom-red);color:var(--unicom-red)}
+[data-theme="dark"] .filter-chip.active{background:var(--unicom-red);color:#fff;border-color:var(--unicom-red)}
+[data-theme="dark"] .product-card{background:#1e1e30}
+[data-theme="dark"] .history-item{background:#181830}
+[data-theme="dark"] .note-box{background:linear-gradient(135deg,#2a2410 0%,#2a2010 100%);color:#FAC775;border-color:#854F0B}
+[data-theme="dark"] .assistant-body{background:#181830}
+[data-theme="dark"] .assistant-msg.bot .assistant-msg-bubble{background:#1e1e30;border-color:#333;color:#e0e0e0}
+[data-theme="dark"] .product-hint{background:linear-gradient(90deg,#1a2a3a 0%,#1a2030 100%);border-color:#378ADD}
+[data-theme="dark"] .guide-step{background:#181830}
+[data-theme="dark"] .guide-tip{background:linear-gradient(135deg,#1a2a3a 0%,#1a2030 100%);border-color:#378ADD}
+[data-theme="dark"] mark{background:var(--highlight);color:#fff}
+[data-theme="dark"] .rule-item{border-color:#2a2a3e}
+[data-theme="dark"] .rule-item-detail{background:rgba(230,0,18,0.1)}
+[data-theme="dark"] .sim-item{background:#1e1e30;border-color:#333}
+[data-theme="dark"] .compare-panel{background:#1e1e30}
+[data-theme="dark"] .autocomplete-list{background:#1e1e30;border-color:#444}
+[data-theme="dark"] .autocomplete-item:hover{background:#2a2a3e}
+/* ===== Theme Toggle ===== */
+.theme-toggle{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.theme-toggle:hover{background:rgba(255,255,255,0.22)}
+/* ===== Version Badge ===== */
+.version-badge{font-size:11px;opacity:.6;padding:3px 8px;background:rgba(255,255,255,0.1);border-radius:4px;margin-left:8px}
+/* ===== Bottom Nav (Mobile) ===== */
+.bottom-nav{display:none}
+@media(max-width:768px){
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border-color);z-index:98;padding:4px 0;box-shadow:0 -2px 12px rgba(0,0,0,0.06)}
+  [data-theme="dark"] .bottom-nav{background:#1e1e30;border-color:#333}
+  .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer;color:var(--text-muted);font-size:10px;transition:var(--transition)}
+  .bottom-nav-item .bn-icon{font-size:18px}
+  .bottom-nav-item.active{color:var(--unicom-red)}
+  .nav{display:none !important}
+  .container{padding-bottom:70px}
+}
+/* ===== Back to Top ===== */
+.back-top{position:fixed;right:22px;bottom:92px;width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid var(--border-color);box-shadow:0 2px 12px rgba(0,0,0,0.1);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:18px;color:var(--unicom-red);z-index:198;transition:var(--transition)}
+.back-top:hover{box-shadow:0 4px 16px rgba(0,0,0,0.15);transform:translateY(-2px)}
+.back-top.show{display:flex}
+[data-theme="dark"] .back-top{background:#1e1e30;border-color:#444;color:var(--unicom-red)}
+@media(max-width:768px){.back-top{right:16px;bottom:140px;width:38px;height:38px;font-size:16px}}
+/* ===== Search Autocomplete ===== */
+.autocomplete-wrap{position:relative;flex:1;min-width:280px}
+.autocomplete-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--border-color);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;max-height:280px;overflow-y:auto;display:none}
+.autocomplete-list.show{display:block}
+.autocomplete-item{padding:10px 16px;cursor:pointer;font-size:13px;border-bottom:1px solid #f5f5f5;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:hover{background:#fff5f5}
+.autocomplete-item .ac-name{font-weight:500;color:var(--text-primary)}
+.autocomplete-item .ac-cat{font-size:11px;color:var(--text-muted)}
+/* ===== Favorite Star ===== */
+.fav-star{cursor:pointer;font-size:16px;color:#ccc;transition:var(--transition);user-select:none;display:inline-block}
+.fav-star:hover{color:#ffc107;transform:scale(1.2)}
+.fav-star.active{color:#ffc107}
+.fav-section{margin-bottom:16px}
+.fav-section-title{font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.fav-chips{display:flex;flex-wrap:wrap;gap:8px}
+.fav-chip{padding:6px 14px;background:linear-gradient(135deg,#fff8e1 0%,#fffde7 100%);border:1px solid #ffe082;border-radius:20px;font-size:12px;cursor:pointer;transition:var(--transition);color:#e65100;font-weight:500;display:flex;align-items:center;gap:4px}
+.fav-chip:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,193,7,0.2)}
+.fav-chip .fav-remove{color:#999;font-size:14px;margin-left:2px}
+.fav-chip .fav-remove:hover{color:var(--unicom-red)}
+[data-theme="dark"] .fav-chip{background:#2a2410;border-color:#854F0B;color:#FAC775}
+.fav-empty{font-size:13px;color:var(--text-muted);padding:8px 0}
+/* ===== Compare ===== */
+.compare-bar{position:sticky;bottom:0;background:#fff;border:2px solid var(--unicom-red);border-radius:var(--radius);padding:12px 16px;margin-top:16px;display:none;align-items:center;gap:12px;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,0.08)}
+.compare-bar.show{display:flex}
+.compare-count{font-size:13px;font-weight:600;color:var(--unicom-red)}
+.compare-btn{padding:8px 20px;background:var(--unicom-red);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;transition:var(--transition);font-weight:500}
+.compare-btn:hover{background:var(--unicom-red-dark)}
+.compare-btn:disabled{background:#ccc;cursor:not-allowed}
+.compare-clear{font-size:12px;color:var(--text-muted);cursor:pointer;text-decoration:underline}
+.compare-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.compare-panel.show{display:flex}
+.compare-panel-content{background:#fff;border-radius:var(--radius);max-width:800px;width:100%;max-height:80vh;overflow-y:auto;padding:24px}
+.compare-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.compare-panel-title{font-size:18px;font-weight:700}
+.compare-panel-close{width:30px;height:30px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.compare-table{width:100%;border-collapse:collapse}
+.compare-table th{background:var(--unicom-dark);color:#fff;padding:10px 14px;font-size:13px;text-align:center}
+.compare-table td{padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:13px;text-align:center}
+.compare-table tr:hover td{background:#fafbfc}
+.compare-checkbox{width:16px;height:16px;cursor:pointer;accent-color:var(--unicom-red)}
+/* ===== Rule Go Calc ===== */
+.rule-go-calc{display:inline-block;margin-top:8px;padding:4px 12px;background:var(--unicom-blue);color:#fff;border-radius:4px;font-size:12px;cursor:pointer;transition:var(--transition);font-weight:500}
+.rule-go-calc:hover{background:#005bb5;transform:translateY(-1px)}
+/* ===== Export Button ===== */
+.export-btn{padding:8px 16px;background:#fff;color:#2e7d32;border:2px solid #2e7d32;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;transition:var(--transition);font-weight:500;white-space:nowrap}
+.export-btn:hover{background:#2e7d32;color:#fff}
+/* ===== Monthly Simulator ===== */
+.sim-card{background:#fff;border-radius:var(--radius);box-shadow:var(--card-shadow);padding:24px;margin-bottom:18px}
+.sim-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border-color);border-radius:var(--radius-sm);margin-bottom:10px;transition:var(--transition)}
+.sim-item:hover{border-color:var(--unicom-red)}
+.sim-item-label{flex:1;font-size:13px;font-weight:500;color:var(--text-primary)}
+.sim-item-input{width:120px;padding:8px 12px;border:2px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;text-align:right;outline:none;transition:var(--transition)}
+.sim-item-input:focus{border-color:var(--unicom-red)}
+.sim-item-unit{font-size:12px;color:var(--text-muted);width:60px}
+.sim-summary{background:linear-gradient(135deg,var(--unicom-dark) 0%,#16213e 100%);color:#fff;border-radius:var(--radius);padding:28px;text-align:center;margin-top:18px;box-shadow:0 6px 20px rgba(0,0,0,0.15)}
+.sim-summary-num{font-size:36px;font-weight:800;color:#ffab40}
+.sim-summary-label{font-size:13px;opacity:.7;margin-top:4px}
+.sim-summary-detail{background:rgba(255,255,255,0.08);border-radius:var(--radius-sm);padding:14px;margin-top:14px;font-size:12px;line-height:1.8;white-space:pre-wrap;text-align:left}
+.sim-channel-result{background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;border-radius:var(--radius);padding:20px;text-align:center;margin-top:14px;box-shadow:0 4px 16px rgba(230,0,18,0.2);display:none}
+.sim-channel-num{font-size:28px;font-weight:800}
+/* ===== Keyboard Hint ===== */
+.kbd-hint{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none}
+.kbd-hint.show{opacity:.9}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="header-left"><div class="header-logo">China Unicom</div><div class="header-title">恩施联通政企积分查询系统</div></div>
-  <div class="header-right">恩施政企专业线</div>
+  <div class="header-right" style="display:flex;align-items:center;gap:10px;">
+    <span class="version-badge">v2026.05</span>
+    <span style="opacity:.75;">恩施政企专业线</span>
+    <button class="theme-toggle" id="themeToggle" title="切换深色模式">🌙</button>
+  </div>
 </div>
 <div class="nav">
   <div class="nav-item active" data-tab="products">产品查询</div>
   <div class="nav-item" data-tab="rules">积分规则</div>
   <div class="nav-item" data-tab="calculator">积分计算器</div>
   <div class="nav-item" data-tab="coefficient">渠道系数</div>
+  <div class="nav-item" data-tab="simulator">积分模拟器</div>
   <div class="nav-item" data-tab="guide">使用说明</div>
 </div>
+<!-- 移动端底部导航 -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="bottom-nav-item active" data-tab="products"><span class="bn-icon">📦</span>产品</div>
+  <div class="bottom-nav-item" data-tab="rules"><span class="bn-icon">📋</span>规则</div>
+  <div class="bottom-nav-item" data-tab="calculator"><span class="bn-icon">🧮</span>计算</div>
+  <div class="bottom-nav-item" data-tab="simulator"><span class="bn-icon">📈</span>模拟</div>
+  <div class="bottom-nav-item" data-tab="guide"><span class="bn-icon">📖</span>说明</div>
+</div>
+<!-- 返回顶部 -->
+<div class="back-top" id="backTop" title="返回顶部">↑</div>
+<!-- 键盘提示 -->
+<div class="kbd-hint" id="kbdHint"></div>
 <div class="container">
   <!-- 产品查询 -->
   <div class="tab-content active" id="tab-products">
     <div class="section-title">小颗粒创新标品 - 主流产品清单</div>
     <div class="stats-row" id="productStats"></div>
     <div class="search-bar">
-      <div class="search-input-wrap">
-        <input type="text" class="search-input" id="productSearch" placeholder="输入产品名称、商品编码或备注进行搜索...">
+      <div class="autocomplete-wrap">
+        <div class="search-input-wrap">
+          <input type="text" class="search-input" id="productSearch" placeholder="输入产品名称、商品编码或备注进行搜索...">
+        </div>
+        <div class="autocomplete-list" id="autocompleteList"></div>
       </div>
       <button class="search-btn" id="searchBtn">搜索</button>
       <button class="btn-outline" id="clearSearchBtn">清除</button>
     </div>
     <div class="filter-row" id="categoryFilters"></div>
+    <!-- 收藏夹 -->
+    <div class="fav-section" id="favSection" style="display:none;">
+      <div class="fav-section-title">⭐ 我的收藏</div>
+      <div class="fav-chips" id="favChips"></div>
+    </div>
     <div class="result-count" id="productCount"></div>
     <!-- Desktop table -->
     <table class="product-table">
@@ -289,12 +442,20 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
         <th data-col="product_code">商品编码<span class="sort-icon"></span></th>
         <th data-col="category">大类<span class="sort-icon"></span></th>
         <th>积分规则</th>
+        <th>收藏</th>
+        <th>对比</th>
       </tr></thead>
       <tbody id="productTableBody"></tbody>
     </table>
     <!-- Mobile cards -->
     <div class="product-cards" id="productCards"></div>
     <div class="no-results" id="noProducts" style="display:none;">未找到匹配的产品，请尝试其他关键词</div>
+    <!-- 对比栏 -->
+    <div class="compare-bar" id="compareBar">
+      <span class="compare-count" id="compareCount">已选 0 个产品</span>
+      <button class="compare-btn" id="compareBtn" disabled>开始对比</button>
+      <button class="compare-btn" id="compareClearBtn" style="background:#666;">清空选择</button>
+    </div>
   </div>
   <!-- 积分规则 -->
   <div class="tab-content" id="tab-rules">
@@ -359,9 +520,12 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
     </div>
     <!-- 计算历史 -->
     <div class="calc-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
         <div class="section-title" style="font-size:18px;margin-bottom:0;">计算历史</div>
-        <span class="history-clear" id="clearHistoryBtn">清空历史</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="export-btn" id="exportHistoryBtn">导出Excel</button>
+          <span class="history-clear" id="clearHistoryBtn">清空历史</span>
+        </div>
       </div>
       <div class="history-list" id="historyList"></div>
     </div>
@@ -391,7 +555,70 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       </div>
     </div>
   </div>
-  <!-- 使用说明 -->
+  <!-- 月度积分模拟器 -->
+  <div class="tab-content" id="tab-simulator">
+    <div class="section-title">月度积分模拟器</div>
+    <div class="sim-card">
+      <p style="color:#666;margin-bottom:16px;font-size:14px;">输入本月各项业务数据，自动汇总预估月度总积分，并匹配渠道系数计算渠道分享积分。</p>
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:var(--unicom-red);">A - 联网（移）业务</div>
+      <div class="sim-item">
+        <span class="sim-item-label">移网单卡月租合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_mobile_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">融合业务月费合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_fusion_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">语音/流量包月租合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_voice_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div style="font-size:15px;font-weight:600;margin:20px 0 14px;color:var(--unicom-red);">B - 联网（固）业务</div>
+      <div class="sim-item">
+        <span class="sim-item-label">专线月租合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_line_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">单宽月资费合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_bb_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">固话月出账合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_voice_fixed" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div style="font-size:15px;font-weight:600;margin:20px 0 14px;color:var(--unicom-red);">C - 算网业务</div>
+      <div class="sim-item">
+        <span class="sim-item-label">标品实缴金额合计（元，毛利≥20%）</span>
+        <input type="number" class="sim-item-input" id="sim_std_amount" placeholder="0" data-sim>
+        <span class="sim-item-unit">元</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">物联网实缴金额合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_iot_amount" placeholder="0" data-sim>
+        <span class="sim-item-unit">元</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">ICT项目计收金额（万元）</span>
+        <input type="number" class="sim-item-input" id="sim_ict_amount" placeholder="0" data-sim>
+        <span class="sim-item-unit">万元</span>
+      </div>
+      <div class="sim-summary" id="simSummary" style="display:none;">
+        <div class="sim-summary-num" id="simTotalPoints">0</div>
+        <div class="sim-summary-label">预估月度总积分</div>
+        <div class="sim-summary-detail" id="simDetail"></div>
+        <div class="sim-channel-result" id="simChannelResult">
+          <div class="sim-channel-num" id="simChannelNum">0</div>
+          <div class="sim-summary-label">预估渠道分享积分</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="tab-content" id="tab-guide">
     <div class="section-title">使用说明</div>
 
@@ -506,6 +733,50 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       </div>
     </div>
 
+    <div class="guide-section">
+      <h3><span class="guide-icon">✨</span> 六、新功能介绍</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body"><b>深色模式</b>：点击右上角 <span class="guide-tag guide-tag-blue">🌙</span> 按钮切换深色/浅色主题，系统会自动记住你的偏好。夜间使用更护眼。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body"><b>收藏夹</b>：产品列表每行右侧有 <span class="guide-tag guide-tag-orange">☆</span> 星标按钮，点击收藏常用产品。收藏的产品会在搜索栏下方以标签形式展示，点击可直接跳转计算器。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body"><b>搜索联想</b>：在搜索框输入时，下方会弹出匹配的产品推荐列表，显示产品名和分类，点击即可快速选中。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body"><b>产品对比</b>：勾选产品列表右侧的「对比」复选框（最多3个），然后点击「开始对比」按钮，弹出对比面板横向展示差异。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">5</div>
+        <div class="guide-step-body"><b>积分规则直达计算</b>：每条积分规则底部有<span class="guide-tag guide-tag-blue">去计算 →</span>按钮，点击直接跳转到对应业务类型的积分计算器。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">6</div>
+        <div class="guide-step-body"><b>计算历史导出</b>：计算历史区域有「导出Excel」按钮，可将历史记录导出为 CSV 文件（Excel可直接打开），方便做月度台账。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">7</div>
+        <div class="guide-step-body"><b>月度积分模拟器</b>：新增「积分模拟器」页面，输入本月各项业务数据，自动汇总预估月度总积分，并匹配渠道系数计算渠道分享积分。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">8</div>
+        <div class="guide-step-body"><b>键盘快捷键</b>：PC端按 <span class="guide-tag guide-tag-red">/</span> 聚焦搜索框，按 <span class="guide-tag guide-tag-red">Esc</span> 关闭弹窗，按数字键 <span class="guide-tag guide-tag-red">1-6</span> 快速切换页面。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">9</div>
+        <div class="guide-step-body"><b>离线使用</b>：网站支持 PWA，在手机浏览器中选「添加到主屏幕」即可像 App 一样使用，断网也能查产品。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">10</div>
+        <div class="guide-step-body"><b>返回顶部</b>：页面滚动后右下角出现 <span class="guide-tag guide-tag-blue">↑</span> 按钮，点击快速回到顶部。</div>
+      </div>
+    </div>
+
     <div class="guide-section" style="text-align:center;color:#888;font-size:13px;">
       <p>恩施联通政企专业线 · 积分查询系统</p>
       <p style="margin-top:4px;">数据来源：附件1-恩施政企积分规则0323修订2026年05月</p>
@@ -513,6 +784,17 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- 对比弹窗 -->
+<div class="compare-panel" id="comparePanel">
+  <div class="compare-panel-content">
+    <div class="compare-panel-header">
+      <div class="compare-panel-title">产品对比</div>
+      <div class="compare-panel-close" id="comparePanelClose">✕</div>
+    </div>
+    <div id="compareTableWrap"></div>
+  </div>
+</div>
 
 <!-- 小助手 -->
 <div class="assistant-float" id="assistantFloat" title="政企积分小助手">
@@ -1372,11 +1654,19 @@ function renderHistory(){
 function switchTab(tabName){
   document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.bottom-nav-item').forEach(function(el){el.classList.remove('active');});
   document.getElementById('tab-'+tabName).classList.add('active');
-  document.querySelector('.nav-item[data-tab="'+tabName+'"]').classList.add('active');
+  var navEl=document.querySelector('.nav-item[data-tab="'+tabName+'"]');
+  if(navEl)navEl.classList.add('active');
+  var bnEl=document.querySelector('.bottom-nav-item[data-tab="'+tabName+'"]');
+  if(bnEl)bnEl.classList.add('active');
   try{localStorage.setItem('lastTab',tabName);}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('.nav-item').forEach(function(item){
+  item.addEventListener('click',function(){switchTab(this.getAttribute('data-tab'));});
+});
+document.querySelectorAll('.bottom-nav-item').forEach(function(item){
   item.addEventListener('click',function(){switchTab(this.getAttribute('data-tab'));});
 });
 
@@ -1502,6 +1792,8 @@ function renderProducts(){
     var catClass=catMap[p.category]||'';
     var marginClass=marginMap[p.margin_range]||'';
     var ct=getCalcTypeForProduct(p);
+    var isFav=isFavorite(p.id);
+    var isChecked=compareList.indexOf(p.id)!==-1;
     html+='<tr class="clickable" data-calc-type="'+ct+'" data-product-name="'+escapeHtml(p.name)+'">';
     html+='<td>'+p.id+'</td>';
     html+='<td style="font-weight:500;">'+highlight(p.name,kwOriginal)+'</td>';
@@ -1510,6 +1802,8 @@ function renderProducts(){
     html+='<td style="font-size:12px;color:#666;">'+highlight(p.product_code||'-',kwOriginal)+'</td>';
     html+='<td><span class="cat-badge '+catClass+'">'+catFullMap[p.category]+'</span></td>';
     html+='<td style="font-size:12px;color:#555;">'+getPointsRuleForProduct(p)+'</td>';
+    html+='<td><span class="fav-star'+(isFav?' active':'')+'" data-fav-id="'+p.id+'" onclick="event.stopPropagation();toggleFavorite('+p.id+')">'+(isFav?'★':'☆')+'</span></td>';
+    html+='<td><input type="checkbox" class="compare-checkbox" data-compare-id="'+p.id+'" '+(isChecked?'checked':'')+' onclick="event.stopPropagation();toggleCompare('+p.id+',this.checked)"></td>';
     html+='</tr>';
   });
   document.getElementById('productTableBody').innerHTML=html;
@@ -1519,10 +1813,12 @@ function renderProducts(){
     var catClass=catMap[p.category]||'';
     var marginClass=marginMap[p.margin_range]||'';
     var ct=getCalcTypeForProduct(p);
+    var isFav=isFavorite(p.id);
+    var isChecked=compareList.indexOf(p.id)!==-1;
     cardHtml+='<div class="product-card" data-calc-type="'+ct+'" data-product-name="'+escapeHtml(p.name)+'">';
-    cardHtml+='<div class="product-card-name">'+highlight(p.name,kwOriginal)+'</div>';
+    cardHtml+='<div class="product-card-name" style="display:flex;justify-content:space-between;align-items:center;">'+highlight(p.name,kwOriginal)+'<span class="fav-star'+(isFav?' active':'')+'" data-fav-id="'+p.id+'" onclick="event.stopPropagation();toggleFavorite('+p.id+')">'+(isFav?'★':'☆')+'</span></div>';
     cardHtml+='<div class="product-card-row"><span>编码: '+highlight(p.product_code||'-',kwOriginal)+'</span><span><span class="cat-badge '+catClass+'">'+catFullMap[p.category]+'</span></span></div>';
-    cardHtml+='<div class="product-card-row"><span>毛利率: <span class="margin-badge '+marginClass+'">'+p.margin_range+'</span></span></div>';
+    cardHtml+='<div class="product-card-row"><span>毛利率: <span class="margin-badge '+marginClass+'">'+p.margin_range+'</span></span><label onclick="event.stopPropagation();" style="font-size:12px;color:#666;"><input type="checkbox" class="compare-checkbox" data-compare-id="'+p.id+'" '+(isChecked?'checked':'')+' onclick="event.stopPropagation();toggleCompare('+p.id+',this.checked)"> 对比</label></div>';
     if(p.remark)cardHtml+='<div class="product-card-row" style="color:#999;">'+highlight(p.remark,kwOriginal)+'</div>';
     cardHtml+='</div>';
   });
@@ -1593,6 +1889,7 @@ function renderRules(){
     html+='<div class="rule-group-header"><span>'+highlight(type,kwOriginal)+' ('+rules.length+'条)</span><span class="toggle-icon">+</span></div>';
     html+='<div class="rule-group-body">';
     rules.forEach(function(r){
+      var calcType=getCalcTypeForRule(r);
       html+='<div class="rule-item">';
       html+='<div class="rule-item-title">'+highlight(r.business_subtype,kwOriginal)+'</div>';
       html+='<div class="rule-item-detail">【'+highlight(r.detail,kwOriginal)+'】</div>';
@@ -1600,6 +1897,7 @@ function renderRules(){
       if(r.scope)html+='<div class="rule-item-scope"><span class="rule-label">统计口径：</span>'+highlight(r.scope,kwOriginal)+'</div>';
       if(r.example)html+='<div class="rule-item-example"><span class="rule-label">积分举例：</span>'+highlight(r.example,kwOriginal)+'</div>';
       if(r.note)html+='<div class="rule-item-note"><span class="rule-label">备注：</span>'+highlight(r.note,kwOriginal)+'</div>';
+      if(calcType)html+='<div class="rule-go-calc" data-calc-type="'+calcType+'">去计算 →</div>';
       html+='</div>';
     });
     html+='</div></div>';
@@ -1611,6 +1909,27 @@ function renderRules(){
       this.nextElementSibling.classList.toggle('open');
       var icon=this.querySelector('.toggle-icon');
       icon.textContent=this.nextElementSibling.classList.contains('open')?'-':'+';
+    });
+  });
+  // 绑定去计算按钮
+  document.querySelectorAll('.rule-go-calc').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var ct=this.getAttribute('data-calc-type');
+      if(ct){
+        switchTab('calculator');
+        var sel=document.getElementById('calcType');
+        for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===ct){sel.selectedIndex=i;break;}}
+        sel.classList.add('calc-preset');
+        updateCalcForm();
+        var hint=document.getElementById('productHint');
+        var hintText=document.getElementById('productHintText');
+        var selOption=sel.options[sel.selectedIndex];
+        hintText.textContent='来自积分规则页 → 业务类型：'+(selOption?selOption.text:'');
+        hint.style.display='flex';
+        showToast('已跳转到积分计算器');
+        setTimeout(function(){var fa=document.getElementById('calcFormArea');if(fa&&fa.innerHTML)fa.scrollIntoView({behavior:'smooth',block:'start'});},150);
+      }
     });
   });
   // 搜索时自动全部展开
@@ -2192,13 +2511,345 @@ function answerAssistant(q){
   },400);
 }
 
+// ===== 规则映射到计算器类型 =====
+function getCalcTypeForRule(r){
+  var t=r.business_type+' '+r.business_subtype+' '+r.detail;
+  if(t.indexOf('移网单卡')!==-1&&t.indexOf('校园')===-1)return 'mobile_single';
+  if(t.indexOf('融合')!==-1&&t.indexOf('新移+新宽')!==-1)return 'mobile_fusion';
+  if(t.indexOf('金融合约')!==-1||t.indexOf('2B/2B2C')!==-1)return 'mobile_finance';
+  if(t.indexOf('语音')!==-1||t.indexOf('流量包')!==-1)return 'mobile_voice';
+  if(t.indexOf('联通云犀')!==-1)return 'mobile_cloudxi';
+  if(t.indexOf('5G随行专网')!==-1)return 'mobile_5g';
+  if(t.indexOf('隐私工作号')!==-1||t.indexOf('工作号')!==-1)return 'mobile_worknum';
+  if(t.indexOf('价值经营')!==-1||t.indexOf('ARPU')!==-1)return 'mobile_value';
+  if(t.indexOf('专线')!==-1&&(t.indexOf('新发展')!==-1||t.indexOf('发展积分')!==-1))return 'fixed_line_new';
+  if(t.indexOf('专线')!==-1&&t.indexOf('续签')!==-1)return 'fixed_line_renew';
+  if(t.indexOf('宽带')!==-1&&(t.indexOf('发展')!==-1||t.indexOf('新增')!==-1))return 'fixed_broadband_new';
+  if(t.indexOf('宽带')!==-1&&t.indexOf('续费')!==-1)return 'fixed_broadband_renew';
+  if(t.indexOf('智企光网')!==-1&&t.indexOf('焕新')!==-1)return 'fixed_ftto_new';
+  if(t.indexOf('智企光网')!==-1&&t.indexOf('FTTO')!==-1)return 'fixed_ftto';
+  if(t.indexOf('联通智家')!==-1)return 'fixed_zhijia';
+  if(t.indexOf('固话')!==-1||t.indexOf('语音中继')!==-1){
+    if(t.indexOf('续费')!==-1||t.indexOf('13-24')!==-1)return 'fixed_voice_renew';
+    return 'fixed_voice_new';
+  }
+  if(t.indexOf('标品')!==-1){
+    if(t.indexOf('20%')!==-1&&t.indexOf('10%')===-1)return 'calc_std_high';
+    if(t.indexOf('10%')!==-1&&t.indexOf('10%）')===-1)return 'calc_std_mid';
+    if(t.indexOf('<10%')!==-1||t.indexOf('＜10%')!==-1)return 'calc_std_low';
+  }
+  if(t.indexOf('物联网')!==-1)return 'calc_iot';
+  if(t.indexOf('ICT')!==-1)return 'calc_ict';
+  return '';
+}
+
+// ===== 深色模式 =====
+function initTheme(){
+  var saved=localStorage.getItem('theme');
+  var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+  var theme=saved||(prefersDark?'dark':'light');
+  applyTheme(theme);
+}
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  var btn=document.getElementById('themeToggle');
+  if(btn)btn.textContent=theme==='dark'?'☀️':'🌙';
+  try{localStorage.setItem('theme',theme);}catch(e){}
+}
+document.getElementById('themeToggle').addEventListener('click',function(){
+  var current=document.documentElement.getAttribute('data-theme')||'light';
+  applyTheme(current==='dark'?'light':'dark');
+});
+
+// ===== 返回顶部 =====
+var backTopBtn=document.getElementById('backTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>300)backTopBtn.classList.add('show');
+  else backTopBtn.classList.remove('show');
+});
+backTopBtn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+// ===== 收藏夹 =====
+function getFavorites(){
+  try{return JSON.parse(localStorage.getItem('favorites')||'[]');}catch(e){return[];}
+}
+function isFavorite(id){return getFavorites().indexOf(id)!==-1;}
+function toggleFavorite(id){
+  var favs=getFavorites();
+  var idx=favs.indexOf(id);
+  if(idx!==-1)favs.splice(idx,1);
+  else favs.push(id);
+  try{localStorage.setItem('favorites',JSON.stringify(favs));}catch(e){}
+  renderProducts();
+  renderFavorites();
+  showToast(isFavorite(id)?'已收藏':'已取消收藏');
+}
+function renderFavorites(){
+  var favs=getFavorites();
+  var section=document.getElementById('favSection');
+  var chips=document.getElementById('favChips');
+  if(favs.length===0){section.style.display='none';return;}
+  section.style.display='block';
+  var html='';
+  favs.forEach(function(id){
+    var p=APP_DATA.products.find(function(x){return x.id===id;});
+    if(!p)return;
+    html+='<div class="fav-chip" data-calc-type="'+getCalcTypeForProduct(p)+'" data-product-name="'+escapeHtml(p.name)+'">';
+    html+=escapeHtml(p.name);
+    html+='<span class="fav-remove" onclick="event.stopPropagation();toggleFavorite('+p.id+')">✕</span>';
+    html+='</div>';
+  });
+  chips.innerHTML=html;
+  // 收藏chip点击跳转计算器
+  chips.querySelectorAll('.fav-chip').forEach(function(chip){
+    chip.addEventListener('click',function(e){
+      if(e.target.classList.contains('fav-remove'))return;
+      var ct=this.getAttribute('data-calc-type');
+      var pName=this.getAttribute('data-product-name');
+      if(ct){
+        switchTab('calculator');
+        var sel=document.getElementById('calcType');
+        for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===ct){sel.selectedIndex=i;break;}}
+        sel.classList.add('calc-preset');updateCalcForm();
+        var hint=document.getElementById('productHint');
+        document.getElementById('productHintText').textContent='当前产品：'+pName;
+        hint.style.display='flex';
+        showToast('已选择「'+pName+'」，跳转积分计算器');
+      }else{
+        switchTab('products');
+        document.getElementById('productSearch').value=pName;
+        renderProducts();
+      }
+    });
+  });
+}
+
+// ===== 产品对比 =====
+var compareList=[];
+function toggleCompare(id,checked){
+  if(checked){
+    if(compareList.length>=3){showToast('最多对比3个产品');renderProducts();return;}
+    compareList.push(id);
+  }else{
+    var idx=compareList.indexOf(id);
+    if(idx!==-1)compareList.splice(idx,1);
+  }
+  renderCompareBar();
+}
+function renderCompareBar(){
+  var bar=document.getElementById('compareBar');
+  var count=document.getElementById('compareCount');
+  var btn=document.getElementById('compareBtn');
+  count.textContent='已选 '+compareList.length+' 个产品';
+  btn.disabled=compareList.length<2;
+  bar.classList.toggle('show',compareList.length>0);
+}
+document.getElementById('compareBtn').addEventListener('click',function(){
+  if(compareList.length<2)return;
+  var html='<table class="compare-table"><thead><tr><th>属性</th>';
+  compareList.forEach(function(id){
+    var p=APP_DATA.products.find(function(x){return x.id===id;});
+    if(p)html+='<th>'+escapeHtml(p.name)+'</th>';
+  });
+  html+='</tr></thead><tbody>';
+  var rows=[
+    {label:'序号',key:'id'},
+    {label:'备注',key:'remark'},
+    {label:'毛利率',key:'margin_range'},
+    {label:'商品编码',key:'product_code'},
+    {label:'大类',key:'category',map:true},
+    {label:'积分规则',key:'_rule'}
+  ];
+  rows.forEach(function(row){
+    html+='<tr><td style="font-weight:600;text-align:left;">'+row.label+'</td>';
+    compareList.forEach(function(id){
+      var p=APP_DATA.products.find(function(x){return x.id===id;});
+      if(!p){html+='<td>-</td>';return;}
+      var val=row.key==='_rule'?getPointsRuleForProduct(p):(row.map?catFullMap[p[row.key]]||'-':p[row.key]||'-');
+      html+='<td>'+escapeHtml(val)+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('compareTableWrap').innerHTML=html;
+  document.getElementById('comparePanel').classList.add('show');
+});
+document.getElementById('compareClearBtn').addEventListener('click',function(){
+  compareList=[];renderCompareBar();renderProducts();
+});
+document.getElementById('comparePanelClose').addEventListener('click',function(){
+  document.getElementById('comparePanel').classList.remove('show');
+});
+document.getElementById('comparePanel').addEventListener('click',function(e){
+  if(e.target===this)this.classList.remove('show');
+});
+
+// ===== 搜索联想 =====
+var acList=document.getElementById('autocompleteList');
+document.getElementById('productSearch').addEventListener('input',function(){
+  var kw=this.value.trim().toLowerCase();
+  if(!kw){acList.classList.remove('show');return;}
+  var matches=APP_DATA.products.filter(function(p){
+    return p.name.toLowerCase().indexOf(kw)!==-1||
+           (p.product_code||'').toLowerCase().indexOf(kw)!==-1||
+           (p.remark||'').toLowerCase().indexOf(kw)!==-1;
+  }).slice(0,8);
+  if(matches.length===0){acList.classList.remove('show');return;}
+  var html='';
+  matches.forEach(function(p){
+    html+='<div class="autocomplete-item" data-pid="'+p.id+'">';
+    html+='<span class="ac-name">'+highlight(p.name,this.value.trim())+'</span>';
+    html+='<span class="ac-cat">'+catFullMap[p.category]+'</span>';
+    html+='</div>';
+  }.bind(this));
+  acList.innerHTML=html;
+  acList.classList.add('show');
+  acList.querySelectorAll('.autocomplete-item').forEach(function(item){
+    item.addEventListener('click',function(){
+      var pid=parseInt(this.getAttribute('data-pid'));
+      var p=APP_DATA.products.find(function(x){return x.id===pid;});
+      if(p){
+        document.getElementById('productSearch').value=p.name;
+        acList.classList.remove('show');
+        renderProducts();
+        var ct=getCalcTypeForProduct(p);
+        if(ct){
+          switchTab('calculator');
+          var sel=document.getElementById('calcType');
+          for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===ct){sel.selectedIndex=i;break;}}
+          sel.classList.add('calc-preset');updateCalcForm();
+          var hint=document.getElementById('productHint');
+          document.getElementById('productHintText').textContent='当前产品：'+p.name;
+          hint.style.display='flex';
+        }
+      }
+    });
+  });
+});
+document.getElementById('productSearch').addEventListener('blur',function(){
+  setTimeout(function(){acList.classList.remove('show');},200);
+});
+
+// ===== 导出计算历史 =====
+document.getElementById('exportHistoryBtn').addEventListener('click',function(){
+  try{
+    var history=JSON.parse(localStorage.getItem('calcHistory')||'[]');
+    if(history.length===0){showToast('暂无计算历史可导出');return;}
+    var csv='\uFEFF业务类型,预计积分(分),计算过程,计算时间\n';
+    history.forEach(function(h){
+      csv+='"'+(h.typeLabel||'').replace(/"/g,'""')+'",';
+      csv+='"'+(h.points||'')+'",';
+      csv+='"'+(h.detail||'').replace(/"/g,'""').replace(/\n/g,' ')+'",';
+      csv+='"'+(h.time||'')+'"\n';
+    });
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    var link=document.createElement('a');
+    link.href=URL.createObjectURL(blob);
+    link.download='积分计算历史_'+new Date().toLocaleDateString('zh-CN').replace(/\//g,'')+'.csv';
+    document.body.appendChild(link);link.click();document.body.removeChild(link);
+    showToast('已导出 '+history.length+' 条记录');
+  }catch(e){showToast('导出失败');}
+});
+
+// ===== 键盘快捷键 =====
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+  if(e.key==='/'){
+    e.preventDefault();
+    var activeTab=document.querySelector('.tab-content.active');
+    var search=activeTab?activeTab.querySelector('.search-input'):null;
+    if(search){search.focus();}
+    else{switchTab('products');setTimeout(function(){document.getElementById('productSearch').focus();},100);}
+    showKbdHint('/ 聚焦搜索');
+  }
+  if(e.key==='Escape'){
+    document.getElementById('comparePanel').classList.remove('show');
+    document.getElementById('assistantWindow').classList.remove('open');
+    acList.classList.remove('show');
+  }
+  var numKey=parseInt(e.key);
+  if(numKey>=1&&numKey<=6){
+    var tabs=['products','rules','calculator','coefficient','simulator','guide'];
+    if(tabs[numKey-1])switchTab(tabs[numKey-1]);
+  }
+});
+function showKbdHint(msg){
+  var hint=document.getElementById('kbdHint');
+  hint.textContent=msg;
+  hint.classList.add('show');
+  setTimeout(function(){hint.classList.remove('show');},1500);
+}
+
+// ===== 月度积分模拟器 =====
+document.querySelectorAll('[data-sim]').forEach(function(input){
+  input.addEventListener('input',calcSimulator);
+});
+function calcSimulator(){
+  function sv(id){var el=document.getElementById(id);return el&&el.value?parseFloat(el.value)||0:0;}
+  var mobileRent=sv('sim_mobile_rent');
+  var fusionRent=sv('sim_fusion_rent');
+  var voiceRent=sv('sim_voice_rent');
+  var lineRent=sv('sim_line_rent');
+  var bbRent=sv('sim_bb_rent');
+  var voiceFixed=sv('sim_voice_fixed');
+  var stdAmount=sv('sim_std_amount');
+  var iotAmount=sv('sim_iot_amount');
+  var ictAmount=sv('sim_ict_amount');
+  var hasInput=mobileRent||fusionRent||voiceRent||lineRent||bbRent||voiceFixed||stdAmount||iotAmount||ictAmount;
+  if(!hasInput){document.getElementById('simSummary').style.display='none';return;}
+  var detail='';
+  var total=0;
+  if(mobileRent){var p=mobileRent*0.8;total+=p;detail+='移网单卡: '+mobileRent+' x 0.8 = '+p.toFixed(1)+'\n';}
+  if(fusionRent){var p=fusionRent*1.2*0.8;total+=p;detail+='融合业务: '+fusionRent+' x 1.2 x 0.8 = '+p.toFixed(1)+'\n';}
+  if(voiceRent){var p=voiceRent*1;total+=p;detail+='语音/流量包: '+voiceRent+' x 1 = '+p.toFixed(1)+'\n';}
+  if(lineRent){var p=lineRent*0.14;total+=Math.min(p,8000);detail+='专线发展: '+lineRent+' x 14% = '+p.toFixed(1)+(p>8000?' (封顶8000)':'')+'\n';}
+  if(bbRent){var p=bbRent*0.8;total+=p;detail+='单宽发展: '+bbRent+' x 0.8 = '+p.toFixed(1)+'\n';}
+  if(voiceFixed){var p=Math.min(voiceFixed*0.12,2000);total+=p;detail+='固话发展: '+voiceFixed+' x 12% = '+p.toFixed(1)+(voiceFixed*0.12>2000?' (封顶2000)':'')+'\n';}
+  if(stdAmount){var p=Math.min(stdAmount*0.07,5000);total+=p;detail+='标品(毛利≥20%): '+stdAmount+' x 7% = '+p.toFixed(1)+(stdAmount*0.07>5000?' (封顶5000)':'')+'\n';}
+  if(iotAmount){var p=Math.min(iotAmount*0.07,5000);total+=p;detail+='物联网: '+iotAmount+' x 7% = '+p.toFixed(1)+(iotAmount*0.07>5000?' (封顶5000)':'')+'\n';}
+  if(ictAmount){
+    if(ictAmount>200){detail+='ICT('+ictAmount+'万): 超200万不参与核算\n';}
+    else{var yuan=ictAmount*10000;var p=Math.min(yuan/1000,10000);total+=p;detail+='ICT: '+yuan+'元 / 1000 = '+p.toFixed(1)+'\n';}
+  }
+  detail+='\n预估月度总积分: '+total.toFixed(1)+' 分';
+  document.getElementById('simSummary').style.display='block';
+  document.getElementById('simTotalPoints').textContent=total.toFixed(1);
+  document.getElementById('simDetail').textContent=detail;
+  // 渠道分享积分
+  var coeff=0.1,range='';
+  if(total<1000){coeff=0.9;range='(0,1000)';}
+  else if(total<2000){coeff=0.8;range='[1000,2000)';}
+  else if(total<3000){coeff=0.7;range='[2000,3000)';}
+  else if(total<4000){coeff=0.6;range='[3000,4000)';}
+  else if(total<5000){coeff=0.5;range='[4000,5000)';}
+  else if(total<6000){coeff=0.4;range='[5000,6000)';}
+  else if(total<7000){coeff=0.3;range='[6000,7000)';}
+  else if(total<10000){coeff=0.2;range='[7000,10000)';}
+  else if(total<20000){coeff=0.15;range='[10000,20000)';}
+  else{coeff=0.1;range='[20000,∞)';}
+  var channelPoints=total*coeff;
+  var cr=document.getElementById('simChannelResult');
+  cr.style.display='block';
+  document.getElementById('simChannelNum').textContent=channelPoints.toFixed(1);
+  cr.querySelector('.sim-summary-label').textContent='渠道分享积分 (分档'+range+', 系数'+coeff+')';
+}
+
+// ===== PWA 注册 =====
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+
 // ===== 初始化 =====
+initTheme();
 renderProductStats();
 renderCategoryFilters();
 renderProducts();
 renderRules();
 renderCoefficients();
 renderHistory();
+renderFavorites();
 
 // 恢复上次浏览的Tab
 try{
