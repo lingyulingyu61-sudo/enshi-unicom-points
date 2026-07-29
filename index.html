@@ -3056,7 +3056,22 @@ function calcSimulator(){
 // ===== PWA 注册 =====
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      reg.addEventListener('updatefound',function(){
+        var newWorker=reg.installing;
+        if(newWorker){
+          newWorker.addEventListener('statechange',function(){
+            if(newWorker.state==='activated' && navigator.serviceWorker.controller){
+              window.location.reload();
+            }
+          });
+        }
+      });
+    }).catch(function(){});
+    // 控制器变化时也刷新
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      window.location.reload();
+    });
   });
 }
 

@@ -1,4 +1,4 @@
-var CACHE_NAME = 'enshi-unicom-points-v1';
+var CACHE_NAME = 'enshi-unicom-points-v2';
 var CACHE_FILES = [
   './',
   './index.html',
@@ -24,14 +24,35 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 self.addEventListener('fetch', function(e) {
-  e.respondWith(
-    caches.match(e.request).then(function(response) {
-      if (response) return response;
-      return fetch(e.request).then(function(resp) {
-        if (resp && resp.status === 200 && e.request.method === 'GET') {
+  var req = e.request;
+  // HTML/navigation: network-first (always get latest when online)
+  if (req.mode === 'navigate' || (req.method === 'GET' && req.headers.get('accept') && req.headers.get('accept').indexOf('text/html') !== -1)) {
+    e.respondWith(
+      fetch(req).then(function(resp) {
+        if (resp && resp.status === 200) {
           var respClone = resp.clone();
           caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(e.request, respClone).catch(function(){});
+            cache.put(req, respClone).catch(function(){});
+          });
+        }
+        return resp;
+      }).catch(function() {
+        return caches.match(req).then(function(response) {
+          return response || caches.match('./index.html');
+        });
+      })
+    );
+    return;
+  }
+  // Other assets: cache-first, fall back to network
+  e.respondWith(
+    caches.match(req).then(function(response) {
+      if (response) return response;
+      return fetch(req).then(function(resp) {
+        if (resp && resp.status === 200 && req.method === 'GET') {
+          var respClone = resp.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(req, respClone).catch(function(){});
           });
         }
         return resp;
