@@ -209,6 +209,46 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
   .calc-result-num{font-size:30px}
   .guide-section{padding:18px}
 }
+/* Assistant */
+.assistant-float{position:fixed;right:22px;bottom:22px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);box-shadow:0 6px 20px rgba(230,0,18,0.35);cursor:pointer;z-index:200;display:flex;align-items:center;justify-content:center;transition:transform .25s,box-shadow .25s;border:3px solid #fff}
+.assistant-float:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 8px 28px rgba(230,0,18,0.45)}
+.assistant-float img{width:42px;height:42px;object-fit:contain;border-radius:50%}
+.assistant-float .assistant-pulse{position:absolute;width:100%;height:100%;border-radius:50%;background:rgba(230,0,18,0.25);animation:assistantPulse 2s infinite;z-index:-1}
+@keyframes assistantPulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.assistant-window{position:fixed;right:22px;bottom:92px;width:360px;max-width:calc(100vw - 44px);height:520px;max-height:calc(100vh - 120px);background:#fff;border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,0.18);z-index:201;display:none;flex-direction:column;overflow:hidden;animation:assistantSlide .25s ease;border:1px solid var(--border-color)}
+.assistant-window.open{display:flex}
+@keyframes assistantSlide{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.assistant-header{background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.assistant-header img{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);object-fit:contain;background:#fff}
+.assistant-header-title{flex:1}
+.assistant-header-title .name{font-size:15px;font-weight:700}
+.assistant-header-title .status{font-size:11px;opacity:.85}
+.assistant-header-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;font-size:16px}
+.assistant-header-close:hover{background:rgba(255,255,255,0.28)}
+.assistant-body{flex:1;overflow-y:auto;padding:16px;background:#f8f9fa}
+.assistant-msg{margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.assistant-msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:contain;background:#fff;border:1px solid #eee;flex-shrink:0}
+.assistant-msg-bubble{max-width:calc(100% - 44px);padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.7;word-break:break-word;white-space:pre-wrap}
+.assistant-msg.user{flex-direction:row-reverse}
+.assistant-msg.user .assistant-msg-bubble{background:var(--unicom-red);color:#fff;border-bottom-right-radius:4px}
+.assistant-msg.bot .assistant-msg-bubble{background:#fff;border:1px solid var(--border-color);color:var(--text-primary);border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.assistant-msg.bot .assistant-msg-bubble a{color:var(--unicom-red);text-decoration:underline}
+.assistant-msg.bot .assistant-msg-bubble .quick-link{color:var(--unicom-red);cursor:pointer;text-decoration:underline;font-weight:500}
+.assistant-quick-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.assistant-quick-chip{padding:6px 12px;background:rgba(230,0,18,0.08);border:1px solid rgba(230,0,18,0.15);border-radius:16px;font-size:12px;color:var(--unicom-red);cursor:pointer;transition:var(--transition)}
+.assistant-quick-chip:hover{background:var(--unicom-red);color:#fff}
+.assistant-input-area{padding:12px 14px;background:#fff;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:center}
+.assistant-input{flex:1;padding:10px 14px;border:2px solid var(--border-color);border-radius:20px;font-size:13px;outline:none;transition:var(--transition)}
+.assistant-input:focus{border-color:var(--unicom-red);box-shadow:0 0 0 3px rgba(230,0,18,0.08)}
+.assistant-send{width:34px;height:34px;border-radius:50%;background:var(--unicom-red);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;font-size:15px;flex-shrink:0}
+.assistant-send:hover{background:var(--unicom-red-dark)}
+.assistant-send:disabled{background:#ccc;cursor:not-allowed}
+@media(max-width:768px){
+  .assistant-window{width:calc(100vw - 32px);right:16px;bottom:86px;height:calc(100vh - 110px)}
+  .assistant-float{right:16px;bottom:16px;width:54px;height:54px}
+  .assistant-float img{width:36px;height:36px}
+}
 </style>
 </head>
 <body>
@@ -455,6 +495,38 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- 小助手 -->
+<div class="assistant-float" id="assistantFloat" title="政企积分小助手">
+  <div class="assistant-pulse"></div>
+  <img src="assistant.png" alt="小助手">
+</div>
+<div class="assistant-window" id="assistantWindow">
+  <div class="assistant-header">
+    <img src="assistant.png" alt="头像">
+    <div class="assistant-header-title">
+      <div class="name">政企积分小助手</div>
+      <div class="status">在线 · 可查询产品与积分规则</div>
+    </div>
+    <div class="assistant-header-close" id="assistantClose">✕</div>
+  </div>
+  <div class="assistant-body" id="assistantBody">
+    <div class="assistant-msg bot">
+      <img src="assistant.png" class="assistant-msg-avatar" alt="">
+      <div class="assistant-msg-bubble">你好呀！我是恩施联通政企积分小助手~ 😊<br>可以问我：<br>• 某个产品怎么算积分<br>• 某类业务的积分规则<br>• 帮我跳转计算器<br>也可以直接输入产品名称或业务类型哦~</div>
+    </div>
+    <div class="assistant-quick-row" id="assistantQuick">
+      <div class="assistant-quick-chip" data-q="有哪些产品">有哪些产品</div>
+      <div class="assistant-quick-chip" data-q="移网单卡怎么算积分">移网单卡积分</div>
+      <div class="assistant-quick-chip" data-q="渠道分享系数">渠道系数</div>
+      <div class="assistant-quick-chip" data-q="怎么使用计算器">计算器用法</div>
+    </div>
+  </div>
+  <div class="assistant-input-area">
+    <input type="text" class="assistant-input" id="assistantInput" placeholder="输入产品名、业务类型或问题...">
+    <button class="assistant-send" id="assistantSend">➤</button>
+  </div>
+</div>
 
 <script>const APP_DATA = {
   "rules": [
@@ -1847,6 +1919,154 @@ function calcChannelShare(){
   document.getElementById('coeffDetail').textContent=
     '月度总积分 '+input+' 分, 对应分档 '+range+', 系数 '+coeff+'\n'+
     '渠道分享积分 = '+input+' x '+coeff+' = '+result.toFixed(1)+' 分';
+}
+
+// ===== 小助手 =====
+var assistantOpen=false;
+function toggleAssistant(open){
+  var win=document.getElementById('assistantWindow');
+  if(typeof open==='undefined')open=!win.classList.contains('open');
+  win.classList.toggle('open',open);
+  assistantOpen=open;
+  if(open)setTimeout(function(){document.getElementById('assistantInput').focus();},100);
+}
+document.getElementById('assistantFloat').addEventListener('click',function(){toggleAssistant(true);});
+document.getElementById('assistantClose').addEventListener('click',function(){toggleAssistant(false);});
+document.getElementById('assistantSend').addEventListener('click',function(){sendAssistantQuestion();});
+document.getElementById('assistantInput').addEventListener('keydown',function(e){if(e.key==='Enter')sendAssistantQuestion();});
+document.getElementById('assistantQuick').addEventListener('click',function(e){
+  var chip=e.target.closest('.assistant-quick-chip');
+  if(chip){
+    var q=chip.getAttribute('data-q');
+    addAssistantMessage(q,true);
+    answerAssistant(q);
+  }
+});
+function addAssistantMessage(text,isUser){
+  var body=document.getElementById('assistantBody');
+  var html='<div class="assistant-msg '+(isUser?'user':'bot')+'">';
+  if(!isUser)html+='<img src="assistant.png" class="assistant-msg-avatar" alt="">';
+  html+='<div class="assistant-msg-bubble">'+escapeHtml(text)+'</div></div>';
+  // 用临时div包装再取节点
+  var wrap=document.createElement('div');wrap.innerHTML=html;
+  var node=wrap.firstElementChild;
+  body.appendChild(node);
+  body.scrollTop=body.scrollHeight;
+  return node;
+}
+function addAssistantHtml(htmlContent){
+  var body=document.getElementById('assistantBody');
+  var wrap=document.createElement('div');wrap.innerHTML=htmlContent;
+  var node=wrap.firstElementChild;
+  body.appendChild(node);
+  body.scrollTop=body.scrollHeight;
+  return node;
+}
+function sendAssistantQuestion(){
+  var input=document.getElementById('assistantInput');
+  var q=input.value.trim();
+  if(!q)return;
+  addAssistantMessage(q,true);
+  input.value='';
+  answerAssistant(q);
+}
+function answerAssistant(q){
+  var text=q.toLowerCase().replace(/[？?。.,，!！]/g,'');
+  var answer='';
+  // 问候
+  if(/^(你好|您好|嗨|hello|hi|在吗|在嘛)$/.test(text)){answer='你好呀！😊 有什么可以帮你的吗？可以输入产品名、业务类型，或者点击上方快捷问题~';}
+  // 使用说明/怎么用
+  else if(/(使用说明|怎么用|如何使用|不会用|教程|帮助)/.test(text)){
+    answer='已为你打开「使用说明」页面，里面有详细的产品查询、积分规则、计算器和渠道系数使用教程。';
+    switchTab('guide');
+  }
+  // 渠道系数
+  else if(/(渠道|分享|系数)/.test(text)){
+    answer='渠道分享系数按月度总积分分档，积分越高系数越低：\n';
+    APP_DATA.coefficients.forEach(function(c,i){answer+=(i+1)+'. '+c.range+' → 系数 '+c.coefficient+'\n';});
+    answer+='\n例如：月度总积分 3500 分，对应分档 [3000,4000)，系数 0.6，渠道分享积分 = 3500 × 0.6 = 2100 分。\n\n需要我打开渠道系数页面吗？';
+  }
+  // 计算器用法
+  else if(/(计算器|怎么算|如何计算|算积分|积分计算)/.test(text)){
+    answer='我可以帮你跳转到积分计算器~ 你也可以直接告诉我你要算什么业务，我帮你跳过去。';
+    switchTab('calculator');
+  }
+  // 有哪些产品/列表
+  else if(/(有哪些产品|产品列表|全部产品|所有产品|产品).*/.test(text)){
+    var cats={};APP_DATA.products.forEach(function(p){cats[p.category]=(cats[p.category]||0)+1;});
+    answer='目前系统共有 '+APP_DATA.products.length+' 个产品，分类如下：\n';
+    Object.keys(cats).forEach(function(c){answer+='• '+catFullMap[c]+'：'+cats[c]+' 个\n';});
+    answer+='\n热门产品：'+APP_DATA.products.slice(0,5).map(function(p){return p.name;}).join('、')+' 等。\n\n你可以直接输入具体产品名称查询详情。';
+  }
+  // 积分规则总览
+  else if(/(积分规则|规则|标准|细则)/.test(text)){
+    var groups={};APP_DATA.rules.forEach(function(r){groups[r.business_type]=(groups[r.business_type]||0)+1;});
+    answer='系统共收录 '+APP_DATA.rules.length+' 条积分规则，分为以下大类：\n';
+    Object.keys(groups).forEach(function(g){answer+='• '+g+'：'+groups[g]+' 条\n';});
+    answer+='\n告诉我具体业务类型（如「移网单卡」「专线新发展」），我可以把对应规则找出来。';
+  }
+  // 具体业务类型匹配规则
+  else{
+    // 尝试匹配规则
+    var matchedRules=[];
+    APP_DATA.rules.forEach(function(r){
+      var score=0;
+      var hay=(r.business_type+' '+r.business_subtype+' '+r.detail).toLowerCase();
+      // 完全包含子类型
+      if(hay.indexOf(text)!==-1)score+=10;
+      // 关键词命中
+      var keywords=text.split(/\s+/);
+      keywords.forEach(function(k){if(k&&hay.indexOf(k)!==-1)score+=3;});
+      if(score>0){matchedRules.push({rule:r,score:score});}
+    });
+    if(matchedRules.length>0){
+      matchedRules.sort(function(a,b){return b.score-a.score;});
+      var top=matchedRules.slice(0,3);
+      answer='找到 '+matchedRules.length+' 条相关规则，为你展示最相关的 '+top.length+' 条：\n\n';
+      top.forEach(function(item,idx){
+        var r=item.rule;
+        answer+=(idx+1)+'）'+r.business_subtype+'（'+r.detail+'）\n';
+        answer+='积分标准：'+r.standard.replace(/\n/g,' ').substring(0,120)+(r.standard.length>120?'...':'')+'\n\n';
+      });
+      answer+='需要我跳转到「积分规则」页面查看完整内容吗？';
+    }else{
+      // 尝试匹配产品
+      var matchedProducts=APP_DATA.products.filter(function(p){
+        return p.name.toLowerCase().indexOf(text)!==-1||(p.product_code||'').toLowerCase().indexOf(text)!==-1;
+      });
+      if(matchedProducts.length>0){
+        var p=matchedProducts[0];
+        answer='找到产品：'+p.name+'\n';
+        answer+='商品编码：'+(p.product_code||'-')+'\n';
+        answer+('毛利率：'+p.margin_range+'\n');
+        answer+='大类：'+catFullMap[p.category]+'\n';
+        answer+='积分规则：'+getPointsRuleForProduct(p)+'\n\n';
+        if(matchedProducts.length>1){
+          answer+='还找到 '+matchedProducts.length+' 个相关产品：'+matchedProducts.slice(1,4).map(function(x){return x.name;}).join('、')+(matchedProducts.length>4?' 等':'')+'。';
+        }
+        // 如果是标品，提供跳转
+        var ct=getCalcTypeForProduct(p);
+        if(ct){
+          answer+='\n\n点击「去计算」可直接跳转计算器。';
+          setTimeout(function(){
+            switchTab('calculator');
+            var sel=document.getElementById('calcType');
+            for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===ct){sel.selectedIndex=i;break;}}
+            sel.classList.add('calc-preset');updateCalcForm();
+            document.getElementById('productHint').style.display='flex';
+            document.getElementById('productHintText').textContent='来自小助手推荐：'+p.name;
+          },800);
+        }
+      }else{
+        answer='抱歉，我没有找到与「'+q+'」完全匹配的产品或规则。\n\n你可以试试：\n• 输入产品名称（如云网关、联通云犀）\n• 输入业务类型（如移网单卡、专线新发展）\n• 输入「规则」「产品」「系数」「计算器」等关键词';
+      }
+    }
+  }
+  // 延迟一点显示，模拟思考
+  setTimeout(function(){
+    var node=addAssistantMessage(answer,false);
+    // 如果answer包含「去计算」或相关操作，不额外处理，已通过switchTab完成
+  },400);
 }
 
 // ===== 初始化 =====
