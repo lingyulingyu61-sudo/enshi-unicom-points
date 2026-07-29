@@ -412,12 +412,18 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .cmp-list-name{font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmp-list-code{font-size:11px;color:var(--text-muted);margin-top:2px}
 .cmp-list-empty{padding:24px;text-align:center;color:var(--text-muted);font-size:13px}
+/* Empty slot click feedback */
+@keyframes cmpPulse{0%{box-shadow:0 0 0 0 rgba(230,0,18,0.25)}70%{box-shadow:0 0 0 10px rgba(230,0,18,0)}100%{box-shadow:0 0 0 0 rgba(230,0,18,0)}}
+.cmp-picker-pulse{animation:cmpPulse 1.2s ease-out}
 /* Selected product cards */
 .cmp-slots{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
 .cmp-slot{flex:1;min-width:160px;max-width:240px;background:#fff;border:2px solid var(--border-color);border-radius:var(--radius);padding:14px;position:relative;transition:var(--transition)}
 [data-theme="dark"] .cmp-slot{background:#1e1e30;border-color:#444}
 .cmp-slot.filled{border-color:var(--unicom-red);box-shadow:0 2px 12px rgba(230,0,18,0.08)}
-.cmp-slot.empty{border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:90px;color:var(--text-muted);font-size:13px;flex-direction:column;gap:4px}
+.cmp-slot.empty{border-style:dashed;display:flex;align-items:center;justify-content:center;min-height:90px;color:var(--text-muted);font-size:13px;flex-direction:column;gap:4px;cursor:pointer;transition:var(--transition)}
+.cmp-slot.empty:hover{border-color:var(--unicom-red);background:#fff5f5;color:var(--unicom-red)}
+[data-theme="dark"] .cmp-slot.empty:hover{background:#2a1525}
+.cmp-slot.empty:active{transform:scale(0.98)}
 .cmp-slot.empty .cmp-slot-num{font-size:24px;opacity:.3}
 .cmp-slot-remove{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--unicom-red);color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:var(--transition);box-shadow:0 2px 6px rgba(0,0,0,0.15)}
 .cmp-slot-remove:hover{transform:scale(1.15)}
@@ -2786,7 +2792,7 @@ function renderComparePanel(){
         slotsHtml+='</div>';
       }
     }else{
-      slotsHtml+='<div class="cmp-slot empty"><div class="cmp-slot-num">+</div><div>添加产品</div></div>';
+      slotsHtml+='<div class="cmp-slot empty" onclick="focusCmpPicker()"><div class="cmp-slot-num">+</div><div>添加产品</div></div>';
     }
   }
   slotsHtml+='</div></div>';
@@ -2933,7 +2939,18 @@ function renderCmpList(keyword){
     });
   });
 }
-function cmpRemove(id){
+function focusCmpPicker(){
+  var scrollEl=document.getElementById('cmpListScroll');
+  var filterInput=document.getElementById('cmpFilter');
+  if(scrollEl){
+    scrollEl.scrollIntoView({behavior:'smooth',block:'center'});
+    scrollEl.classList.add('cmp-picker-pulse');
+    setTimeout(function(){scrollEl.classList.remove('cmp-picker-pulse');},1200);
+  }
+  if(filterInput){
+    setTimeout(function(){filterInput.focus();},300);
+  }
+}
   var idx=compareList.indexOf(id);
   if(idx!==-1){
     var p=APP_DATA.products.find(function(x){return x.id===id;});
