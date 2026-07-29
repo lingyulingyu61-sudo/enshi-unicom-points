@@ -329,6 +329,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
             <option value="mobile_finance">A-2B/2B2C金融合约</option>
             <option value="mobile_voice">A-移网基础语音/流量包</option>
             <option value="mobile_cloudxi">A-联通云犀</option>
+            <option value="mobile_5g">A-5G随行专网</option>
             <option value="mobile_worknum">A-隐私工作号</option>
             <option value="mobile_value">A-价值经营(ARPU提升)</option>
             <option value="fixed_line_new">B-专线新发展</option>
@@ -336,10 +337,13 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
             <option value="fixed_broadband_new">B-单宽新发展</option>
             <option value="fixed_broadband_renew">B-单宽续费</option>
             <option value="fixed_ftto">B-智企光网FTTO</option>
+            <option value="fixed_ftto_new">B-智企光网(焕新)</option>
+            <option value="fixed_zhijia">B-联通智家</option>
             <option value="fixed_voice_new">B-固话/语音发展</option>
             <option value="fixed_voice_renew">B-固话/语音续费</option>
             <option value="calc_std_high">C-小颗粒标品(毛利>=20%)</option>
             <option value="calc_std_mid">C-小颗粒标品(10%<=毛利<20%)</option>
+            <option value="calc_std_low">C-小颗粒标品(毛利<10%)</option>
             <option value="calc_iot">C-物联网连接</option>
             <option value="calc_ict">C-新兴ICT业务</option>
           </select>
@@ -488,6 +492,18 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
         <div class="guide-step-num">Q</div>
         <div class="guide-step-body"><b>数据会保存吗？</b>计算历史和上次浏览的页面会自动保存在本地浏览器中，清除浏览器缓存后会丢失。</div>
       </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>毛利低于10%的产品怎么算？</b>选择「C-小颗粒标品(毛利&lt;10%)」，输入实缴金额、实际毛利率和标准毛利率，系统按公式 (实际毛利率/标准毛利率) × 实缴金额 × 每元积分 计算，存量续费在此基础上 ×50%。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>新兴ICT超过200万怎么办？</b>计收金额超过200万的项目<b>不参与积分核算</b>，计算器输入超过200万时会自动提示。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>联通智家和智企光网焕新怎么算？</b>联通智家为<b>固定50分/户</b>；智企光网焕新区分趸交版（出账×100%）、分月版（出账×100% + 月出账×20%×5个月）和L版（12期100分/24期150分）。</div>
+      </div>
     </div>
 
     <div class="guide-section" style="text-align:center;color:#888;font-size:13px;">
@@ -537,9 +553,9 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "移网单卡（不含隐私号、流量卡、公务号）",
       "detail": "实际月租（0，∞）",
       "standard": "标准分值 = 用户实际月租*异网系数 * 首缴系数 \n（1）异网系数：\n - 非异网，系数*0.8；\n - 异网，系数*1.2。\n（2）首缴系数：\n - 高于首缴标准，为1；\n - 低于首缴标准，为0，不核发积分。",
-      "scope": "1、实际月租 = 用户入网当月实际出账月租\n月固定费：基本套餐费\n2、入网首存：入网首次预存款（取入网当月所有现金缴费）99元及以下产品需首缴100元；129及以上产品需首缴200元，否则不予以核算积分。（单位证件入网的后付费用户，建议默认首存系数为1，预核算积分，并在3/6个月进行稽核回溯，3个月內未实际缴费达标，回溯30%积分；6个月內未实际缴费达标，回溯剩余70%积分）。移网单卡首缴不达标，T+1月缴费达标后，在T+1月核发积分\n3、有效发展：积分计算当月正常在网、无欠费、非三无，则核发基础业务积分。\n4、以上不含隐私号、流量卡、公务号。\n5、个人用户及单位证件用户入网积分回溯：根据号码实际在网时长，跟踪并进行积分回溯。\n（1）在网不足1个月（即当月入网当月拆机离网用户），无积分。\n（2）用户业务办理3个月内离网或销户，回溯50%基础业务积分。预销户和销户都作为当月不计入积分的；然后个别预销户取消状态了，再回溯给发展积分。\n（3）在网时长>3个月，全额核算积分。\n（4）针对积分核算当月为三无的，T+1月进行回溯，非三无即补核发积分。\n（5）针对入网首月非全量全价计费的用户（如：按量计费、按天计费、首月半价或开通了赠费/折扣产品的），则在T+1月进行核算，T月不核算。\n6、当月高资费，次月低资费的积分回溯规则：次月,按次月月租回溯。\n7、集团证件多卡并账单卡缴费公式：并账缴费/卡数>单卡月租*80%，不触发回溯；\n8、增存判断：存量参与渠道分享；T到12月的新发展积分落到2024年的用存量拍照。\n9、单号码积分回溯规则，多条件出发回溯，回溯比例超过100%的，扣罚到0为止。\n10、移+移融合、移+宽融合的副卡，都按移网单卡计算积分。（优化）\n",
-      "example": "用户 A 在2024年3月办理 59 元月租卡 1 张，每月赠送 20 元，同时办理30元流量包，未办理融合及金融合约业务，并且入网后首缴 100 元。则该用户在 202403 账期统一积分中，按实际出账，获得积分(59-20+30) 。\n",
-      "note": "月固定费：基本套餐费，SELECT note_item_code FROM PUB_071_DIM.DIM_D_ACC_CB_NOTEITEM WHERE rule_id = '45500002' and parent_item_code='21229'\n叠加包：主要是流量和语音包+COP，\nparent_item_code：\n'921230',\n'921275',\n'222937',\n'222948',\n'996578',\n'996350'，\n'996350'   ----20251210新增[湖北政企2B分期月费]\n取以下几个字段，供核实优惠轨迹：\nFEE NUMBER(30,10)  comment '帐目金额',\nB_DISCNT NUMBER(30,10)  comment '计费优惠金额',\nA_DISCNT NUMBER(30,10)  comment '帐务优惠金额',\nADJUST_BEFORE NUMBER(30,10)  comment '帐前调整金额',\nADJUST_AFTER NUMBER(30,10)  comment '帐后调整金额',\nWRITEOFFEE NUMBER(30,10)  comment '赠款销账金额',\n"
+      "scope": "1、实际月租 = 用户入网当月实际出账月租\n月固定费：基本套餐费\n2、入网首存：入网首次预存款（取入网当月所有现金缴费）99元及以下产品需首缴100元；129及以上产品需首缴200元，否则不予以核算积分。（单位证件入网的后付费用户，建议默认首存系数为1，预核算积分，并在3/6个月进行稽核回溯，3个月內未实际缴费达标，回溯30%积分；6个月內未实际缴费达标，回溯剩余70%积分）。移网单卡首缴不达标，T+1月缴费达标后，在T+1月核发积分\n3、有效发展：积分计算当月正常在网、无欠费、非三无，则核发基础业务积分。\n4、以上不含隐私号、流量卡、公务号。\n5、个人用户及单位证件用户入网积分回溯：根据号码实际在网时长，跟踪并进行积分回溯。\n（1）在网不足1个月（即当月入网当月拆机离网用户），无积分。\n（2）用户业务办理3个月内离网或销户，回溯50%基础业务积分。预销户和销户都作为当月不计入积分的；然后个别预销户取消状态了，再回溯给发展积分。\n（3）在网时长>3个月，全额核算积分。\n（4）针对积分核算当月为三无的，T+1月进行回溯，非三无即补核发积分。\n（5）针对入网首月非全量全价计费的用户（如：按量计费、按天计费、首月半价或开通了赠费/折扣产品的），则在T+1月进行核算，T月不核算。\n6、当月高资费，次月低资费的积分回溯规则：次月,按次月月租回溯。\n7、集团证件多卡并账单卡缴费公式：并账缴费/卡数>单卡月租*80%，不触发回溯；\n8、增存判断：存量参与渠道分享；T到12月的新发展积分落到2024年的用存量拍照。\n9、单号码积分回溯规则，多条件出发回溯，回溯比例超过100%的，扣罚到0为止。\n10、移+移融合、移+宽融合的副卡，都按移网单卡计算积分。（优化）",
+      "example": "用户 A 在2024年3月办理 59 元月租卡 1 张，每月赠送 20 元，同时办理30元流量包，未办理融合及金融合约业务，并且入网后首缴 100 元。则该用户在 202403 账期统一积分中，按实际出账，获得积分(59-20+30) 。",
+      "note": "月固定费：基本套餐费，SELECT note_item_code FROM PUB_071_DIM.DIM_D_ACC_CB_NOTEITEM WHERE rule_id = '45500002' and parent_item_code='21229'\n叠加包：主要是流量和语音包+COP，\nparent_item_code：\n'921230',\n'921275',\n'222937',\n'222948',\n'996578',\n'996350'，\n'996350'   ----20251210新增[湖北政企2B分期月费]\n取以下几个字段，供核实优惠轨迹：\nFEE NUMBER(30,10)  comment '帐目金额',\nB_DISCNT NUMBER(30,10)  comment '计费优惠金额',\nA_DISCNT NUMBER(30,10)  comment '帐务优惠金额',\nADJUST_BEFORE NUMBER(30,10)  comment '帐前调整金额',\nADJUST_AFTER NUMBER(30,10)  comment '帐后调整金额',\nWRITEOFFEE NUMBER(30,10)  comment '赠款销账金额',"
     },
     {
       "business_type": "A-联网（移）积分",
@@ -547,7 +563,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "detail": "实际月租（0，∞）",
       "standard": "标准分值 = 用户的产品套餐月租 * 异网系数 * 首缴系数\n（1）异网系数：\n - 非异网，系数*0.8；\n - 异网，系数*1.2。\n（2）首缴系数：\n - 满足1倍月租，为1；\n - 低于1倍月租，为0，不核发积分。",
       "scope": "1、校园规则：\n1）武汉：（2-3月，7-10月）校园产品套餐月租；（非2-3月、7-10月）用户的实际出账月租。\n2）其他地市：用户的实际出账月租（优化）\n2、校园迎新阶段（2-3月，7-10月）按照产品名称、编码作为积分核定条件，产品编码及产品如下：\n91296262 联通沃派数字人套餐39元、91296263 联通沃派数字人套餐59元\n（非2-3月、7-10月）非迎新阶段，按地市导入产品码表范围。（优化）\n3、入网首存：入网预存款（取入网当月所有现金缴费）不低于1倍月租，否则不予以核算积分，其中前置阶段（7、8月）入网的取当年10月前预存款合计，非前置（非7、8月入网的）则须在激活30天内（1个月）满足缴费要求（单位证件入网的同常规产品）\n4、有效发展：校园用户（含K12）积分计算当月，正常在网、无欠费则核发基础业务积分。\n5、积分回溯：根据号码实际在网时长，跟踪并进行积分回溯。\n（1）在网不足1个月（即当月入网当月拆机离网用户），无积分。\n（2）用户业务办理3个月内离网或销户，回溯50%基础业务积分。\n（3）武汉校园（含K12），用户入网第3个月，按照入网时用户产品月租-入网第3个月实际出账月租进行回溯差值。其他地市不适用这条（优化）\n（4）在网时长>3个月，全额核算积分。\n6、剔除三无验证（优化）",
-      "example": " ",
+      "example": "",
       "note": "沃派数字人产品无T+1月补发机制（待验证）"
     },
     {
@@ -591,7 +607,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "新发展高价值移网\n（含：移网单卡、“新移+新宽”融合)",
       "detail": "用户入网首月实际月租 [39，129)，\n除了标准分值外，T+3月至12月，可获得在网积分",
       "standard": "以发展月为 T 月，从 T+6 月至 T+15 月这 10 个月中，获得每月净月费 * 0.2 倍。",
-      "scope": "1、核发当月实际月租降档至39元以下，则不核算在网积分。\n2、积分计算当月，正常在网、无欠费、非三无。\n",
+      "scope": "1、核发当月实际月租降档至39元以下，则不核算在网积分。\n2、积分计算当月，正常在网、无欠费、非三无。",
       "example": "",
       "note": "入网当月如无效发展，即剔除高价值用户统计（不参与回溯机制）。举例：3月入网的号码，三无或首缴不足、欠费等，T+6即9月时，即不核算高价用户积分"
     },
@@ -600,7 +616,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "新发展高价值移网\n（含：移网单卡、“新移+新宽”融合)",
       "detail": "用户入网首月实际月租 [129，∞)\n除了标准分值外，T+3月至12月，可获得高价值积分",
       "standard": "以发展月为 T 月，从 T+6 月至 T+15 月这 10 个月的净月费 * 0.5 倍。",
-      "scope": "1、核发当月实际月租降档至129元以下，则按[39.129)档位核算积分；如实际月租降档至39元以下，则不核算在网积分。\n2、积分计算当月，正常在网、无欠费、非三无。\n",
+      "scope": "1、核发当月实际月租降档至129元以下，则按[39.129)档位核算积分；如实际月租降档至39元以下，则不核算在网积分。\n2、积分计算当月，正常在网、无欠费、非三无。",
       "example": "",
       "note": "入网当月如无效发展，即剔除高价值用户统计（不参与回溯机制）。举例：3月入网的号码，三无或首缴不足、欠费等，T+6即9月时，即不核算高价用户积分"
     },
@@ -610,7 +626,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "detail": "新用户办理2B/2B2C金融合约",
       "standard": "移网标准分值*2。",
       "scope": "1.包括2B分期，建银分期、先享分期等2B/2B2C金融合约。\n2.新用户办理金融分期，按移网号码的发展人核发积分；存量用户办理金融合约，按移网号码的存量维系责任关系核发积分。\n3.新用户办理金融分期，首月金融分期合约未生效未出账的，T+1月回溯，T月不核算。如果首月生效的，T月计算；次月生效的，T+1月计算，分2个月来计算。",
-      "example": "\n",
+      "example": "",
       "note": "1、限定受理工号是政企渠道的工号\n2、核发给用户对应发展人"
     },
     {
@@ -663,7 +679,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "价值经营",
       "detail": "迁转或办理合约包后，ARPU值提升[10，30）",
       "standard": "按剔除优惠后套餐提升差值的1.2倍计算积分。",
-      "scope": "",
+      "scope": "仅统计50合约，且剔除赠费优惠类合约及大金融合约产品（50合约名称剔除：带“赠费”或者“赠送”或者“送”字眼的）。\n1.改成套餐出账月租(固定费+叠加包)的价值提升;\n2.统一按受理后三个月平均ARPU值的提升情况计算，T+4月核算",
       "example": "",
       "note": ""
     },
@@ -672,7 +688,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "价值经营",
       "detail": "迁转或办理合约包后，ARPU值提升[30，∞）",
       "standard": "按剔除优惠后套餐提升差值的1.5倍计算积分。",
-      "scope": "",
+      "scope": "仅统计50合约，且剔除赠费优惠类合约及大金融合约产品（50合约名称剔除：带“赠费”或者“赠送”或者“送”字眼的）。\n1.改成套餐出账月租(固定费+叠加包)的价值提升;\n2.统一按受理后三个月平均ARPU值的提升情况计算，T+4月核算",
       "example": "",
       "note": ""
     },
@@ -690,8 +706,8 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "专线联网（组网专线/互联网专线)",
       "detail": "存量续签积分\n（涵盖专线、电路、精品网、云联网等）",
       "standard": "存量续签积分= （后付回款金额*后付系数+预付回款金额*预付系数）*3%，月度个人总积分5000分封顶\n后付系数=0.6，预付系数=0.8；回款总金额按当月入账金额测算，根据客户回款时间拆分为后付与预付。",
-      "scope": "",
-      "example": "",
+      "scope": "其他调节规则\n1、折扣系数作为可选项，由分公司自行确定是否纳入积分核算。\n2、异网策反：异网策反可按原积分再叠加10%的激励核算积分，口径为，自然客户近6个月无同类业务在网。异网策反，同类业务，只要是双线就算。\n3、创新项目中低于基线价格红线的双线，在以上标准基础上按80%核算。\n4、省分统谈统签（省分核心要客名单客户）本地入网的项目，由分公司自行在以上标准基础上，设置本地核发比例。\n5、短期线路<6个月，按照0.3倍计算发展积分,且明确为短期线路的不参与流失扣罚。拆机时间-入网时间≤6个月的，判定为短期线路。\n6、存量定义：按入网日期+12个月，算新发展；按入网日期+13个月，算存量；\n7、政企运营平台受理的全国版云宽算互联网专线，cbss受理的省内云宽算宽带。精品网迁转号码打标为存量，不能算新发展。",
+      "example": "例：客户入网后第3个月缴清12个月费用，前2个月按后付测算，后10个月按预付测算",
       "note": ""
     },
     {
@@ -762,7 +778,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "小颗粒标品业务",
       "detail": "毛利率X≥20%",
       "standard": "增量：标准积分=实缴金额*7%；月度个人总积分5000分封顶\n存量续费：标准积分=实缴金额*5%；月度个人总积分2000分封顶",
-      "scope": "1、根据产品成本和实际售价来核算毛利，实际售价一般为销售指导价格，销售指导价格为产品引入时上会时的价格。\n2、骨干云池建议标准售价按照标品积分规则的1.5倍系数核算，最低限价-标准售价之间按照1.2倍核算，低于最低限价的情况系数不变。\n3、所有标品折扣销售需在营销方案审批中明确折扣比例及毛利率，以此作为依据核算积分。\n4、标品的增存量按照WV网下相关产品的业务标识号的入网时间进行判断：\n按入网日期+12个月及以内，算新发展\n按入网日期+13个月及以上，算存量\n",
+      "scope": "1、根据产品成本和实际售价来核算毛利，实际售价一般为销售指导价格，销售指导价格为产品引入时上会时的价格。\n2、骨干云池建议标准售价按照标品积分规则的1.5倍系数核算，最低限价-标准售价之间按照1.2倍核算，低于最低限价的情况系数不变。\n3、所有标品折扣销售需在营销方案审批中明确折扣比例及毛利率，以此作为依据核算积分。\n4、标品的增存量按照WV网下相关产品的业务标识号的入网时间进行判断：\n按入网日期+12个月及以内，算新发展\n按入网日期+13个月及以上，算存量",
       "example": "",
       "note": ""
     },
@@ -771,7 +787,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "小颗粒标品业务",
       "detail": "20%>X≥10%",
       "standard": "增量：标准积分=实缴金额*5%，月度个人总积分3000分封顶\n存量续费：标准积分=实缴金额*3%，月度个人总积分1000分封顶",
-      "scope": "",
+      "scope": "1、根据产品成本和实际售价来核算毛利，实际售价一般为销售指导价格，销售指导价格为产品引入时上会时的价格。\n2、骨干云池建议标准售价按照标品积分规则的1.5倍系数核算，最低限价-标准售价之间按照1.2倍核算，低于最低限价的情况系数不变。\n3、所有标品折扣销售需在营销方案审批中明确折扣比例及毛利率，以此作为依据核算积分。\n4、标品的增存量按照WV网下相关产品的业务标识号的入网时间进行判断：\n按入网日期+12个月及以内，算新发展\n按入网日期+13个月及以上，算存量",
       "example": "",
       "note": ""
     },
@@ -780,7 +796,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "小颗粒标品业务",
       "detail": "X＜10%（应对市场竞争降低产品毛利率）",
       "standard": "增量：标准积分=（X/标准毛利率）*实缴金额*标准毛利率对应的每元积分；月度个人总积分3000分封顶\n存量续费：在增量基础上*50%。月度个人总积分1000分封顶",
-      "scope": "",
+      "scope": "1、根据产品成本和实际售价来核算毛利，实际售价一般为销售指导价格，销售指导价格为产品引入时上会时的价格。\n2、骨干云池建议标准售价按照标品积分规则的1.5倍系数核算，最低限价-标准售价之间按照1.2倍核算，低于最低限价的情况系数不变。\n3、所有标品折扣销售需在营销方案审批中明确折扣比例及毛利率，以此作为依据核算积分。\n4、标品的增存量按照WV网下相关产品的业务标识号的入网时间进行判断：\n按入网日期+12个月及以内，算新发展\n按入网日期+13个月及以上，算存量",
       "example": "",
       "note": ""
     },
@@ -807,7 +823,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "新兴ICT业务",
       "detail": "计收金额＞200万",
       "standard": "不参与积分核算",
-      "scope": "",
+      "scope": "1、个人年度总积分10000分封顶；\n2、针对单项目积分需核发至团队多名成员，根据人员贡献度由项目经理或营服总分配比例。\n3、取值当年新签约的ICT项目，且完成立项（立项编码），按照计收主营部分的金额为基数核算。",
       "example": "",
       "note": ""
     },
@@ -816,7 +832,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "拜访管理",
       "detail": "拜访频次",
       "standard": "满分100分。客户经理当月拜访频次>=16次积满分，在【0,16】之间线性积分。\n注：省分结合附件上传率、异常打卡情况（比如一天内同一客户3条及以上拜访记录、定位在联通公司等）进行真实性预警提示，市州结合预警信息核实拜访真实性，予以剔除。",
-      "scope": "\n1、拜访管理板块中拜访频次、拜访覆盖率目标值市州可根据实际情况设定，但不得低于省分要求的月均16次，月均拜访覆盖20%；本地可应用本地目标进行积分计算。\n2、客户范围为全省1.2万户核心要客，拜访类型为“现场”且“定位在联通公司”的不计入拜访次数，其他拜访类型均算入，“一天内同一个客户3条以上拜访记录”的只计入2条。\n3、商机状态不包含废弃、起草环节的。\n4、拜访覆盖，客户资料是限定核心要客的。\n5、拜访频次，商机不限定核心要客。",
+      "scope": "1、拜访管理板块中拜访频次、拜访覆盖率目标值市州可根据实际情况设定，但不得低于省分要求的月均16次，月均拜访覆盖20%；本地可应用本地目标进行积分计算。\n2、客户范围为全省1.2万户核心要客，拜访类型为“现场”且“定位在联通公司”的不计入拜访次数，其他拜访类型均算入，“一天内同一个客户3条以上拜访记录”的只计入2条。\n3、商机状态不包含废弃、起草环节的。\n4、拜访覆盖，客户资料是限定核心要客的。\n5、拜访频次，商机不限定核心要客。",
       "example": "",
       "note": ""
     },
@@ -825,7 +841,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "拜访管理",
       "detail": "拜访覆盖率",
       "standard": "满分50分。客户经理主责名单当月拜访覆盖率>=20%积满分，在【0,20%】之间线性积分。",
-      "scope": "",
+      "scope": "1、拜访管理板块中拜访频次、拜访覆盖率目标值市州可根据实际情况设定，但不得低于省分要求的月均16次，月均拜访覆盖20%；本地可应用本地目标进行积分计算。\n2、客户范围为全省1.2万户核心要客，拜访类型为“现场”且“定位在联通公司”的不计入拜访次数，其他拜访类型均算入，“一天内同一个客户3条以上拜访记录”的只计入2条。\n3、商机状态不包含废弃、起草环节的。\n4、拜访覆盖，客户资料是限定核心要客的。\n5、拜访频次，商机不限定核心要客。",
       "example": "",
       "note": ""
     },
@@ -834,7 +850,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "商机管理",
       "detail": "商机录入",
       "standard": "满分100分。每录入一条商机得20分，标准积分=新增商机数量*20。",
-      "scope": "",
+      "scope": "1、拜访管理板块中拜访频次、拜访覆盖率目标值市州可根据实际情况设定，但不得低于省分要求的月均16次，月均拜访覆盖20%；本地可应用本地目标进行积分计算。\n2、客户范围为全省1.2万户核心要客，拜访类型为“现场”且“定位在联通公司”的不计入拜访次数，其他拜访类型均算入，“一天内同一个客户3条以上拜访记录”的只计入2条。\n3、商机状态不包含废弃、起草环节的。\n4、拜访覆盖，客户资料是限定核心要客的。\n5、拜访频次，商机不限定核心要客。",
       "example": "",
       "note": ""
     },
@@ -843,7 +859,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "三全管理",
       "detail": "客户资料完整性",
       "standard": "满分50分。每个名单客户资料填报完整，得10分，标准积分=当月填报完整资料的名单客户数*10。\n资料完整性说明：一个名单下归集的所有自然人客户，均在联通政企APP拜访管理中录入完整客情资料（应包括关键人信息、员工人数、IT投资预算、市场份额、异网信息、战略合作信息、客户规划信息、关键决策流程等），视为名单客户资料完整。",
-      "scope": "",
+      "scope": "1、拜访管理板块中拜访频次、拜访覆盖率目标值市州可根据实际情况设定，但不得低于省分要求的月均16次，月均拜访覆盖20%；本地可应用本地目标进行积分计算。\n2、客户范围为全省1.2万户核心要客，拜访类型为“现场”且“定位在联通公司”的不计入拜访次数，其他拜访类型均算入，“一天内同一个客户3条以上拜访记录”的只计入2条。\n3、商机状态不包含废弃、起草环节的。\n4、拜访覆盖，客户资料是限定核心要客的。\n5、拜访频次，商机不限定核心要客。",
       "example": "",
       "note": ""
     },
@@ -888,7 +904,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "销售管理",
       "detail": "营销动作",
       "standard": "满分100分，包括校园等销售动作，圈校50分一校；日常营销（现场、内购会等）一次一场一校20分。",
-      "scope": "",
+      "scope": "客户拜访、商机录入取值原商机系统、拜访系统；营销动作取值校园管理。手工单独积分导入（截止校园动作积分正式上线）",
       "example": "",
       "note": ""
     },
@@ -897,7 +913,7 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
       "business_subtype": "销售管理",
       "detail": "商机录入",
       "standard": "满分100分。每录入一条商机得20分，标准积分=新增商机数量*20。",
-      "scope": "",
+      "scope": "客户拜访、商机录入取值原商机系统、拜访系统；营销动作取值校园管理。手工单独积分导入（截止校园动作积分正式上线）",
       "example": "",
       "note": ""
     }
@@ -1301,11 +1317,11 @@ var sortCol='';
 var sortDir='asc';
 var calcTypeLabels={
   'mobile_single':'A-移网单卡','mobile_fusion':'A-融合业务','mobile_finance':'A-金融合约',
-  'mobile_voice':'A-语音/流量包','mobile_cloudxi':'A-联通云犀','mobile_worknum':'A-隐私工作号',
+  'mobile_voice':'A-语音/流量包','mobile_cloudxi':'A-联通云犀','mobile_5g':'A-5G随行专网','mobile_worknum':'A-隐私工作号',
   'mobile_value':'A-价值经营','fixed_line_new':'B-专线新发展','fixed_line_renew':'B-专线续签',
   'fixed_broadband_new':'B-单宽新发展','fixed_broadband_renew':'B-单宽续费',
-  'fixed_ftto':'B-智企光网FTTO','fixed_voice_new':'B-固话发展','fixed_voice_renew':'B-固话续费',
-  'calc_std_high':'C-标品(毛利>=20%)','calc_std_mid':'C-标品(毛利10-20%)',
+  'fixed_ftto':'B-智企光网FTTO','fixed_ftto_new':'B-智企光网(焕新)','fixed_zhijia':'B-联通智家','fixed_voice_new':'B-固话发展','fixed_voice_renew':'B-固话续费',
+  'calc_std_high':'C-标品(毛利>=20%)','calc_std_mid':'C-标品(毛利10-20%)','calc_std_low':'C-标品(毛利<10%)',
   'calc_iot':'C-物联网','calc_ict':'C-新兴ICT'
 };
 
@@ -1670,6 +1686,9 @@ function updateCalcForm(){
     'mobile_cloudxi':{fields:[
       {id:'rent',label:'联通云犀包月费(元)',type:'number',ph:'如20'}
     ],note:'积分=月费x1'},
+    'mobile_5g':{fields:[
+      {id:'rent',label:'5G随行专网包月费(元)',type:'number',ph:'如30'}
+    ],note:'积分=月费x1'},
     'mobile_worknum':{fields:[
       {id:'rent',label:'工作号平台月租(元)',type:'number',ph:'如25'},
       {id:'count',label:'项目号码数量',type:'number',ph:'如10'}
@@ -1699,6 +1718,13 @@ function updateCalcForm(){
       {id:'bill',label:'首月出账(元)',type:'number',ph:'如200'},
       {id:'ver',label:'版本',type:'select',opts:[{v:'lump50',t:'趸交版(出账x50%)'},{v:'lump100',t:'焕新趸交版(出账x100%)'},{v:'month',t:'分月版(发展=出账x100%+月出账x20%x12)'}]}
     ],note:'分月版另计出账积分'},
+    'fixed_ftto_new':{fields:[
+      {id:'bill',label:'首月出账(元)',type:'number',ph:'如200'},
+      {id:'ver',label:'版本',type:'select',opts:[{v:'lump100',t:'趸交版(出账x100%)'},{v:'month',t:'分月版(发展=出账x100%+月出账x20%x5)'},{v:'l12',t:'L版12期(固定100分)'},{v:'l24',t:'L版24期(固定150分)'}]}
+    ],note:'焕新产品: 趸交版出账x100%; 分月版发展=出账x100%+月出账x20%x5个月'},
+    'fixed_zhijia':{fields:[
+      {id:'count',label:'办理数量(户)',type:'number',ph:'如1'}
+    ],note:'联通智家固定积分50分/户, T+1月一次性核发'},
     'fixed_voice_new':{fields:[
       {id:'bill',label:'月出账(元)',type:'number',ph:'如300'}
     ],note:'入网1-12个月, 积分=月出账x12%, 封顶2000'},
@@ -1713,6 +1739,12 @@ function updateCalcForm(){
       {id:'amount',label:'实缴金额(元)',type:'number',ph:'如10000'},
       {id:'type',label:'增量/存量',type:'select',opts:[{v:'5',t:'增量(5%)'},{v:'3',t:'存量续费(3%)'}]}
     ],note:'10%<=毛利<20%, 增量封顶3000, 存量封顶1000'},
+    'calc_std_low':{fields:[
+      {id:'amount',label:'实缴金额(元)',type:'number',ph:'如10000'},
+      {id:'actualMargin',label:'实际毛利率X(%)',type:'number',ph:'如8'},
+      {id:'stdMargin',label:'标准毛利率(%)',type:'number',ph:'20',val:'20'},
+      {id:'type',label:'增量/存量',type:'select',opts:[{v:'inc',t:'增量'},{v:'renew',t:'存量续费(增量x50%)'}]}
+    ],note:'毛利<10%: 增量=(X/标准毛利率)x实缴x每元积分, 封顶3000; 存量=增量x50%, 封顶1000'},
     'calc_iot':{fields:[
       {id:'amount',label:'实缴金额(元)',type:'number',ph:'如10000'},
       {id:'type',label:'增量/存量',type:'select',opts:[{v:'7',t:'增量(7%)'},{v:'3',t:'存量(3%)'}]}
@@ -1786,6 +1818,10 @@ function doCalc(){
       var r=v('rent');points=r*1;
       detail='计算: '+r+' x 1 = '+points.toFixed(1)+' 分';
       break;}
+    case'mobile_5g':{
+      var r=v('rent');points=r*1;
+      detail='计算: '+r+' x 1 = '+points.toFixed(1)+' 分';
+      break;}
     case'mobile_worknum':{
       var r=v('rent'),c=v('count');points=r*1*c;
       detail='计算: '+r+' x 1 x '+c+'(号码数) = '+points.toFixed(1)+' 分 (需月租>=25元)';
@@ -1821,6 +1857,17 @@ function doCalc(){
       else if(ver==='lump100'){points=b*1.0;detail='焕新趸交版: '+b+' x 100% = '+points.toFixed(1)+' 分';}
       else{points=b*1.0;detail='分月版发展积分: '+b+' x 100% = '+points.toFixed(1)+' 分\n另计: 月出账x20%x12个月的出账积分';}
       break;}
+    case'fixed_ftto_new':{
+      var b=v('bill'),ver=vs('ver');
+      if(ver==='lump100'){points=b*1.0;detail='焕新趸交版: '+b+' x 100% = '+points.toFixed(1)+' 分';}
+      else if(ver==='month'){points=b*1.0;detail='分月版发展积分: '+b+' x 100% = '+points.toFixed(1)+' 分\n另计: 月出账x20%x5个月的出账积分';}
+      else if(ver==='l12'){points=100;detail='L版12期: 固定 100 分';}
+      else{points=150;detail='L版24期: 固定 150 分';}
+      break;}
+    case'fixed_zhijia':{
+      var c=v('count')||1;points=50*c;
+      detail='计算: 50(固定积分) x '+c+'(户) = '+points.toFixed(1)+' 分 (T+1月一次性核发)';
+      break;}
     case'fixed_voice_new':{
       var b=v('bill');points=Math.min(b*0.12,2000);
       detail='计算: '+b+' x 12% = '+(b*0.12).toFixed(1)+' 分 (封顶2000)\n实际: '+points.toFixed(1)+' 分';
@@ -1839,14 +1886,32 @@ function doCalc(){
       points=Math.min(a*t/100,cap);
       detail='计算: '+a+' x '+t+'% = '+(a*t/100).toFixed(1)+' 分 (封顶'+cap+')\n实际: '+points.toFixed(1)+' 分';
       break;}
+    case'calc_std_low':{
+      var a=v('amount'),x=v('actualMargin'),sm=v('stdMargin')||20,t=vs('type');
+      // 标准毛利率对应的每元积分(即标准毛利率档位的增量比例)
+      var perYuan=sm>=20?0.07:0.05;
+      var raw=(x/sm)*a*perYuan;
+      if(t==='renew'){
+        var cap=1000;points=Math.min(raw*0.5,cap);
+        detail='实际毛利率'+x+'%, 标准毛利率'+sm+'%, 每元积分'+(perYuan*100).toFixed(0)+'%\n';
+        detail+='增量积分: ('+x+'/'+sm+') x '+a+' x '+(perYuan*100).toFixed(0)+'% = '+raw.toFixed(1)+' 分\n';
+        detail+='存量续费: '+raw.toFixed(1)+' x 50% = '+(raw*0.5).toFixed(1)+' 分 (封顶'+cap+')\n实际: '+points.toFixed(1)+' 分';
+      }else{
+        var cap=3000;points=Math.min(raw,cap);
+        detail='实际毛利率'+x+'%, 标准毛利率'+sm+'%, 每元积分'+(perYuan*100).toFixed(0)+'%\n';
+        detail+='计算: ('+x+'/'+sm+') x '+a+' x '+(perYuan*100).toFixed(0)+'% = '+raw.toFixed(1)+' 分 (封顶'+cap+')\n实际: '+points.toFixed(1)+' 分';
+      }
+      break;}
     case'calc_iot':{
       var a=v('amount'),t=parseFloat(vs('type'));var cap=t===7?5000:3000;
       points=Math.min(a*t/100,cap);
       detail='计算: '+a+' x '+t+'% = '+(a*t/100).toFixed(1)+' 分 (封顶'+cap+')\n实际: '+points.toFixed(1)+' 分';
       break;}
     case'calc_ict':{
-      var a=v('amount');var yuan=a*10000;points=Math.min(yuan/1000,10000);
-      detail='计算: '+yuan+'元 / 1000 = '+(yuan/1000).toFixed(1)+' 分 (年封顶10000)';
+      var a=v('amount');
+      if(a>200){points=0;detail='计收金额 '+a+'万元 > 200万, 不参与积分核算';}
+      else{var yuan=a*10000;points=Math.min(yuan/1000,10000);
+      detail='计算: '+yuan+'元 / 1000 = '+(yuan/1000).toFixed(1)+' 分 (年封顶10000)';}
       break;}
   }
   document.getElementById('calcResult').style.display='block';
