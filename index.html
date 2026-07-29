@@ -2951,6 +2951,7 @@ function focusCmpPicker(){
     setTimeout(function(){filterInput.focus();},300);
   }
 }
+function cmpRemove(id){
   var idx=compareList.indexOf(id);
   if(idx!==-1){
     var p=APP_DATA.products.find(function(x){return x.id===id;});
