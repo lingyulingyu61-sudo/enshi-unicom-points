@@ -138,6 +138,22 @@ mark{background:var(--highlight);color:#333;padding:0 2px;border-radius:2px}
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;font-size:14px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:.9}
+/* Guide */
+.guide-section{background:#fff;border-radius:12px;box-shadow:var(--card-shadow);padding:28px;margin-bottom:20px}
+.guide-section h3{font-size:18px;font-weight:bold;color:var(--unicom-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.guide-section h3 .guide-icon{font-size:22px}
+.guide-step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:#f8f9fa;border-radius:8px;transition:background .2s}
+.guide-step:hover{background:#fff5f5}
+.guide-step-num{flex-shrink:0;width:28px;height:28px;background:var(--unicom-red);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold}
+.guide-step-body{flex:1;font-size:14px;line-height:1.7;color:#444}
+.guide-step-body b{color:var(--unicom-red)}
+.guide-tip{background:linear-gradient(135deg,#e3f2fd 0%,#f0f7ff 100%);border:1px solid #90caf9;border-radius:8px;padding:12px 16px;margin-top:8px;font-size:13px;color:#1565c0;line-height:1.6}
+.guide-tip b{color:#0d47a1}
+.guide-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:bold;margin:0 2px}
+.guide-tag-red{background:#ffebee;color:#c62828}
+.guide-tag-blue{background:#e3f2fd;color:#1565c0}
+.guide-tag-green{background:#e8f5e9;color:#2e7d32}
+.guide-tag-orange{background:#fff3e0;color:#e65100}
 /* Responsive */
 @media(max-width:768px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
@@ -159,6 +175,7 @@ mark{background:var(--highlight);color:#333;padding:0 2px;border-radius:2px}
   <div class="nav-item" data-tab="rules">积分规则</div>
   <div class="nav-item" data-tab="calculator">积分计算器</div>
   <div class="nav-item" data-tab="coefficient">渠道系数</div>
+  <div class="nav-item" data-tab="guide">使用说明</div>
 </div>
 <div class="container">
   <!-- 产品查询 -->
@@ -276,6 +293,114 @@ mark{background:var(--highlight);color:#333;padding:0 2px;border-radius:2px}
         <div class="calc-result-label">渠道分享积分</div>
         <div class="calc-detail" id="coeffDetail"></div>
       </div>
+    </div>
+  </div>
+  <!-- 使用说明 -->
+  <div class="tab-content" id="tab-guide">
+    <div class="section-title">使用说明</div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">🔍</span> 一、产品查询</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body">在搜索框输入<b>产品名称、商品编码或备注</b>关键词，输入的同时结果会实时更新，匹配的文字会高亮显示。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body">点击首页上方统计卡片（<span class="guide-tag guide-tag-blue">云产品</span><span class="guide-tag guide-tag-green">大数据</span><span class="guide-tag guide-tag-orange">安全</span><span class="guide-tag guide-tag-red">物联网</span>）或下方筛选标签，可按产品大类筛选。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body">点击表头（序号、产品名称、毛利率等）可<b>排序</b>，再点一次切换升序/降序。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body"><b>点击任意产品行</b>，自动跳转到积分计算器，业务类型自动选中对应类型，直接输入金额即可算积分。</div>
+      </div>
+      <div class="guide-tip"><b>小贴士：</b>点击「清除」按钮会清空搜索关键词并自动聚焦回搜索框，方便继续输入。手机上产品列表会自动切换为卡片布局。</div>
+    </div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">📋</span> 二、积分规则</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body">页面按业务大类分组展示（A-联网移、B-联网固、C-算网、D-要客、E-商企、F-校园），点击分组标题<b>展开/收起</b>。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body">在搜索框输入关键词，可在<b>所有规则</b>中搜索，匹配的分组会自动展开。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body">点击上方<b>「全部展开」</b>按钮可一次性展开所有分组，<b>「全部收起」</b>则一键折叠。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body">每条规则包含：<b>积分标准</b>（红色边框区块）、<b>统计口径</b>、<b>积分举例</b>（黄底）、<b>备注</b>，向下滚动可查看完整内容。</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">🧮</span> 三、积分计算器</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body">选择<b>业务类型</b>（如下拉框有红色高亮边框，说明是从产品页跳转过来的，已自动选好类型）。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body">根据表单提示输入对应参数（月租、金额、系数等），<b>输入即出结果</b>，无需点击计算按钮。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body">橙色提示框标注了该业务类型的<b>计算规则和封顶值</b>，请留意是否有积分上限。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body">计算结果区域显示<b>预计积分</b>和<b>详细计算过程</b>，点击「复制结果」按钮可一键复制，方便发微信或记台账。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">5</div>
+        <div class="guide-step-body">下方<b>「计算历史」</b>自动保存最近 10 次计算记录（含时间、业务类型、积分、计算过程），关闭浏览器也不丢失。可点击「清空历史」清除。</div>
+      </div>
+      <div class="guide-tip"><b>小贴士：</b>从产品页跳转过来时，顶部蓝色提示条会显示当前产品名称和对应业务类型。手动切换业务类型后提示条自动消失。</div>
+    </div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">📊</span> 四、渠道系数</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body">表格展示 10 档渠道分享系数，按月度积分范围从低到高排列，积分越高系数越低。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body">在下方输入框输入<b>月度总积分</b>，系统自动匹配对应分档并计算渠道分享积分，显示详细计算过程。</div>
+      </div>
+      <div class="guide-tip"><b>举例：</b>月度总积分 3500 分 → 对应分档 [3000,4000) → 系数 0.6 → 渠道分享积分 = 3500 × 0.6 = 2100 分</div>
+    </div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">💡</span> 五、常见问题</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>搜索不到产品？</b>请检查关键词是否准确，支持模糊搜索。也可以点击统计卡片按大类浏览全部产品。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>计算器没有对应的产品类型？</b>部分产品根据毛利率自动匹配计算器类型（毛利≥20% 或 10%~20%），在产品列表的「积分规则」列可以看到对应规则。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>手机上怎么用？</b>直接用手机浏览器打开网址即可，产品列表自动切换为卡片模式，所有功能均支持触屏操作。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>数据会保存吗？</b>计算历史和上次浏览的页面会自动保存在本地浏览器中，清除浏览器缓存后会丢失。</div>
+      </div>
+    </div>
+
+    <div class="guide-section" style="text-align:center;color:#888;font-size:13px;">
+      <p>恩施联通政企专业线 · 积分查询系统</p>
+      <p style="margin-top:4px;">数据来源：附件1-恩施政企积分规则0323修订2026年05月</p>
     </div>
   </div>
 </div>
