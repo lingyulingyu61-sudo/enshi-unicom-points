@@ -201,7 +201,9 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
   .header{padding:0 16px;height:54px}
   .header-logo{font-size:18px}
   .header-title{display:none}
-  .header-right{display:none}
+  .header-right .version-badge,.header-right span:not(.theme-toggle){display:none}
+  .header-right{display:flex !important;gap:0 !important}
+  .header-right .theme-toggle{width:32px;height:32px;font-size:15px}
   .nav-item{padding:10px 14px;font-size:13px}
   .nav-item::before{font-size:14px}
   .nav{top:54px}
@@ -315,6 +317,12 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .back-top.show{display:flex}
 [data-theme="dark"] .back-top{background:#1e1e30;border-color:#444;color:var(--unicom-red)}
 @media(max-width:768px){.back-top{right:16px;bottom:140px;width:38px;height:38px;font-size:16px}}
+/* Mobile: compare bar above bottom nav */
+@media(max-width:768px){
+  .compare-bar{position:fixed !important;bottom:56px !important;left:12px !important;right:12px !important;z-index:99 !important;border-radius:12px;flex-wrap:wrap}
+  .compare-bar .compare-count{font-size:12px}
+  .compare-bar .compare-btn{padding:6px 14px;font-size:12px}
+}
 /* ===== Search Autocomplete ===== */
 .autocomplete-wrap{position:relative;flex:1;min-width:280px}
 .autocomplete-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--border-color);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;max-height:280px;overflow-y:auto;display:none}
