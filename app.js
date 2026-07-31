@@ -64,6 +64,10 @@ function showToast(msg){
 function saveToHistory(type,points,detail){
   try{
     var history=JSON.parse(localStorage.getItem('calcHistory')||'[]');
+    // 去重：最近一条 type+points+detail 完全相同则跳过
+    if(history.length>0&&history[0].type===type&&history[0].points===points&&history[0].detail===detail){
+      return;
+    }
     history.unshift({type:type,typeLabel:calcTypeLabels[type]||type,points:points,detail:detail,time:new Date().toLocaleString('zh-CN')});
     if(history.length>50)history=history.slice(0,50);
     localStorage.setItem('calcHistory',JSON.stringify(history));
@@ -161,12 +165,12 @@ function renderCategoryFilters(){
 }
 
 // ===== 搜索事件 =====
-document.getElementById('productSearch').addEventListener('input',renderProducts);
+document.getElementById('productSearch').addEventListener('input',debounce(renderProducts,200));
 document.getElementById('searchBtn').addEventListener('click',renderProducts);
 document.getElementById('clearSearchBtn').addEventListener('click',function(){
   document.getElementById('productSearch').value='';renderProducts();document.getElementById('productSearch').focus();
 });
-document.getElementById('ruleSearch').addEventListener('input',renderRules);
+document.getElementById('ruleSearch').addEventListener('input',debounce(renderRules,200));
 
 // ===== 产品积分规则 =====
 function getPointsRuleForProduct(p){
@@ -737,7 +741,7 @@ function renderCoefficients(){
 }
 
 // ===== 渠道积分计算 =====
-document.getElementById('coeffInput').addEventListener('input',calcChannelShare);
+document.getElementById('coeffInput').addEventListener('input',debounce(calcChannelShare,600));
 function calcChannelShare(){
   var input=parseFloat(document.getElementById('coeffInput').value);
   if(isNaN(input)||input<=0){document.getElementById('coeffResult').style.display='none';return;}
@@ -1324,7 +1328,7 @@ document.getElementById('comparePanel').addEventListener('click',function(e){
 
 // ===== 搜索联想 =====
 var acList=document.getElementById('autocompleteList');
-document.getElementById('productSearch').addEventListener('input',function(){
+document.getElementById('productSearch').addEventListener('input',debounce(function(){
   var kw=this.value.trim().toLowerCase();
   if(!kw){acList.classList.remove('show');return;}
   var kwOrig=this.value.trim();
@@ -1365,7 +1369,7 @@ document.getElementById('productSearch').addEventListener('input',function(){
       }
     });
   });
-});
+},200));
 document.getElementById('productSearch').addEventListener('blur',function(){
   setTimeout(function(){acList.classList.remove('show');},200);
 });
@@ -1421,9 +1425,6 @@ function showKbdHint(msg){
 }
 
 // ===== 月度积分模拟器 =====
-document.querySelectorAll('[data-sim]').forEach(function(input){
-  input.addEventListener('input',calcSimulator);
-});
 function calcSimulator(){
   function sv(id){var el=document.getElementById(id);return el&&el.value?parseFloat(el.value)||0:0;}
   var mobileRent=sv('sim_mobile_rent');
@@ -1711,9 +1712,10 @@ document.getElementById('simResetBtn').addEventListener('click',function(){
   calcSimulator();
   showToast('模拟器数据已重置');
 });
-// 监听模拟器输入变化
+// 监听模拟器输入变化（防抖，避免连击频繁重算+写localStorage）
+var debouncedSim=debounce(function(){calcSimulator();saveSimData();},600);
 document.querySelectorAll('[data-sim]').forEach(function(el){
-  el.addEventListener('input',function(){calcSimulator();saveSimData();});
+  el.addEventListener('input',debouncedSim);
 });
 
 // ===== 积分规则分类快捷筛选 =====
