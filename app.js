@@ -48,6 +48,14 @@ function highlight(text,keyword){
   var escKw=escapeHtml(keyword).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   return s.replace(new RegExp(escKw,'gi'),'<mark>$&</mark>');
 }
+function debounce(fn,wait){
+  var timer=null;
+  return function(){
+    var args=arguments,self=this;
+    clearTimeout(timer);
+    timer=setTimeout(function(){fn.apply(self,args);},wait);
+  };
+}
 function showToast(msg){
   var t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
@@ -531,9 +539,15 @@ function updateCalcForm(){
   area.innerHTML=html;
   // 绑定按钮
   document.getElementById('calcBtn').addEventListener('click',doCalc);
-  // 实时计算：输入即算
-  document.querySelectorAll('#calcFormArea input, #calcFormArea select').forEach(function(el){
-    el.addEventListener('input',doCalc);
+  // 输入防抖计算：停止输入 600ms 后再算，避免连击产生大量历史记录
+  var debouncedCalc=debounce(doCalc,600);
+  document.querySelectorAll('#calcFormArea input').forEach(function(el){
+    el.addEventListener('input',debouncedCalc);
+    el.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){doCalc();}
+    });
+  });
+  document.querySelectorAll('#calcFormArea select').forEach(function(el){
     el.addEventListener('change',doCalc);
   });
 }
