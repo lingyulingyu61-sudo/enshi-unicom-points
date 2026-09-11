@@ -17,7 +17,7 @@
       <div class="ann-header-icon">📢</div>
       <div>
         <div class="ann-header-title">使用须知</div>
-        <div class="ann-header-sub">恩施联通政企积分查询系统 · v2026.05</div>
+        <div class="ann-header-sub">恩施联通政企积分查询系统 · v2026.06</div>
       </div>
     </div>
     <div class="ann-body">
@@ -30,7 +30,7 @@
       </div>
       <div class="ann-section">
         <div class="ann-section-title">📅 数据版本</div>
-        <div class="ann-section-text">当前数据基于《恩施政企积分规则》文件整理，更新至 2026 年 05 月。后续规则如有调整，系统将同步更新。</div>
+        <div class="ann-section-text">当前数据基于《恩施政企积分规则》0623 修订版文件整理，更新至 2026 年 06 月。后续规则如有调整，系统将同步更新。</div>
       </div>
       <div class="ann-section">
         <div class="ann-section-title">📞 反馈与咨询</div>
@@ -49,7 +49,7 @@
 <div class="header">
   <div class="header-left"><div class="header-logo">China Unicom</div><div class="header-title">恩施联通政企积分查询系统</div></div>
   <div class="header-right" style="display:flex;align-items:center;gap:10px;">
-    <span class="version-badge">v2026.05</span>
+    <span class="version-badge">v2026.06</span>
     <span style="opacity:.75;">恩施政企专业线</span>
     <button class="theme-toggle" id="themeToggle" title="切换深色模式">🌙</button>
   </div>
@@ -77,7 +77,7 @@
 <div class="container">
   <!-- 产品查询 -->
   <div class="tab-content active" id="tab-products">
-    <div class="section-title">小颗粒创新标品 - 主流产品清单</div>
+    <div class="section-title">小颗粒创新标品 · 标品清单取数更新</div>
     <div class="stats-row" id="productStats"></div>
     <!-- 快捷功能入口 -->
     <div class="quick-access" id="quickAccess">
@@ -90,7 +90,7 @@
       <div class="quick-card" data-quick-tab="rules" style="--qc-color:#E60012;--qc-bg:rgba(230,0,18,0.06)">
         <div class="quick-card-icon">📋</div>
         <div class="quick-card-title">积分规则</div>
-        <div class="quick-card-desc">6大类41条规则<br>一键展开查看</div>
+        <div class="quick-card-desc">6大类42条规则<br>一键展开查看</div>
         <div class="quick-card-arrow">→</div>
       </div>
       <div class="quick-card" data-quick-tab="simulator" style="--qc-color:#7b1fa2;--qc-bg:rgba(123,31,162,0.08)">
@@ -109,7 +109,7 @@
     <div class="search-bar">
       <div class="autocomplete-wrap">
         <div class="search-input-wrap">
-          <input type="text" class="search-input" id="productSearch" placeholder="输入产品名称、编码、备注或拼音首字母搜索...">
+          <input type="text" class="search-input" id="productSearch" placeholder="输入产品名称、编码、取数分组或拼音首字母搜索...">
         </div>
         <div class="autocomplete-list" id="autocompleteList"></div>
       </div>
@@ -129,7 +129,7 @@
       <thead><tr>
         <th data-col="id">序号<span class="sort-icon"></span></th>
         <th data-col="name">产品名称<span class="sort-icon"></span></th>
-        <th data-col="remark">备注<span class="sort-icon"></span></th>
+        <th data-col="block">取数分组<span class="sort-icon"></span></th>
         <th data-col="margin_range">毛利率<span class="sort-icon"></span></th>
         <th data-col="product_code">商品编码<span class="sort-icon"></span></th>
         <th data-col="category">大类<span class="sort-icon"></span></th>
@@ -182,6 +182,14 @@
       </div>
       <div class="formula-body" id="formulaBody"></div>
     </div>
+    <!-- 联通云犀收费包参考 -->
+    <div class="formula-card">
+      <div class="formula-header" id="yunxiHeader">
+        <span>☁️ 联通云犀收费包参考（点击展开/收起）</span>
+        <span class="toggle-icon">+</span>
+      </div>
+      <div class="formula-body" id="yunxiBody"></div>
+    </div>
     <div class="product-hint" id="productHint" style="display:none;">
       <span class="product-hint-icon">📦</span>
       <span class="product-hint-text" id="productHintText"></span>
@@ -193,28 +201,44 @@
           <label class="calc-label">选择业务类型</label>
           <select class="calc-select" id="calcType">
             <option value="">请选择业务类型</option>
-            <option value="mobile_single">A-移网单卡</option>
-            <option value="mobile_fusion">A-融合业务(新移+新宽)</option>
-            <option value="mobile_finance">A-2B/2B2C金融合约</option>
-            <option value="mobile_voice">A-移网基础语音/流量包</option>
-            <option value="mobile_cloudxi">A-联通云犀</option>
-            <option value="mobile_5g">A-5G随行专网</option>
-            <option value="mobile_worknum">A-隐私工作号</option>
-            <option value="mobile_value">A-价值经营(ARPU提升)</option>
-            <option value="fixed_line_new">B-专线新发展</option>
-            <option value="fixed_line_renew">B-专线存量续签</option>
-            <option value="fixed_broadband_new">B-单宽新发展</option>
-            <option value="fixed_broadband_renew">B-单宽续费</option>
-            <option value="fixed_ftto">B-智企光网FTTO</option>
-            <option value="fixed_ftto_new">B-智企光网(焕新)</option>
-            <option value="fixed_zhijia">B-联通智家</option>
-            <option value="fixed_voice_new">B-固话/语音发展</option>
-            <option value="fixed_voice_renew">B-固话/语音续费</option>
-            <option value="calc_std_high">C-小颗粒标品(毛利>=20%)</option>
-            <option value="calc_std_mid">C-小颗粒标品(10%<=毛利<20%)</option>
-            <option value="calc_std_low">C-小颗粒标品(毛利<10%)</option>
-            <option value="calc_iot">C-物联网连接</option>
-            <option value="calc_ict">C-新兴ICT业务</option>
+            <optgroup label="A - 联网（移）">
+              <option value="mobile_single">A-移网单卡</option>
+              <option value="mobile_enterprise_num">A-企业工作号/联通魔方</option>
+              <option value="mobile_school">A-移网单卡(校园)</option>
+              <option value="mobile_fusion">A-融合业务(新移+新宽)</option>
+              <option value="mobile_school_fusion">A-校园融合</option>
+              <option value="mobile_finance">A-2B/2B2C金融合约</option>
+              <option value="mobile_voice">A-移网基础语音/流量包</option>
+              <option value="mobile_cloudxi">A-联通云犀</option>
+              <option value="mobile_5g">A-5G随行专网</option>
+              <option value="mobile_worknum">A-隐私工作号</option>
+              <option value="mobile_highvalue">A-高价值移网(在网积分)</option>
+              <option value="mobile_highvalue_school">A-高价值移网(校园)</option>
+              <option value="mobile_value">A-价值经营(ARPU提升)</option>
+            </optgroup>
+            <optgroup label="B - 联网（固）">
+              <option value="fixed_line_new">B-专线新发展</option>
+              <option value="fixed_line_renew">B-专线存量续签</option>
+              <option value="fixed_broadband_new">B-单宽新发展</option>
+              <option value="fixed_broadband_renew">B-单宽续费</option>
+              <option value="fixed_ftto">B-智企光网FTTO</option>
+              <option value="fixed_ftto_new">B-智企光网(焕新)</option>
+              <option value="fixed_zhijia">B-联通智家</option>
+              <option value="fixed_voice_new">B-固话/语音发展</option>
+              <option value="fixed_voice_renew">B-固话/语音续费</option>
+            </optgroup>
+            <optgroup label="C - 算网业务">
+              <option value="calc_std_high">C-小颗粒标品(毛利&gt;=20%)</option>
+              <option value="calc_std_mid">C-小颗粒标品(20%&gt;毛利&gt;=10%)</option>
+              <option value="calc_std_low">C-小颗粒标品(毛利&lt;10%)</option>
+              <option value="calc_iot">C-物联网连接</option>
+              <option value="calc_ict">C-新兴ICT业务</option>
+            </optgroup>
+            <optgroup label="D/E/F - 市场动作积分">
+              <option value="act_dkh">D-要客（行业）市场动作</option>
+              <option value="act_sq">E-商企市场动作</option>
+              <option value="act_xy">F-校园市场动作</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -287,8 +311,23 @@
         <span class="sim-item-unit">元/月</span>
       </div>
       <div class="sim-item">
+        <span class="sim-item-label">企业工作号/联通魔方月租合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_entnum_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">校园移网/融合月费合计（元）</span>
+        <input type="number" class="sim-item-input" id="sim_school_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
         <span class="sim-item-label">融合业务月费合计（元）</span>
         <input type="number" class="sim-item-input" id="sim_fusion_rent" placeholder="0" data-sim>
+        <span class="sim-item-unit">元/月</span>
+      </div>
+      <div class="sim-item">
+        <span class="sim-item-label">高价值移网每月净月费合计（元，在网积分）</span>
+        <input type="number" class="sim-item-input" id="sim_hv_rent" placeholder="0" data-sim>
         <span class="sim-item-unit">元/月</span>
       </div>
       <div class="sim-item">
@@ -351,11 +390,11 @@
       <h3><span class="guide-icon">🔍</span> 一、产品查询</h3>
       <div class="guide-step">
         <div class="guide-step-num">1</div>
-        <div class="guide-step-body">在搜索框输入<b>产品名称、商品编码或备注</b>关键词，输入的同时结果会实时更新，匹配的文字会高亮显示。</div>
+        <div class="guide-step-body">在搜索框输入<b>产品名称、商品编码或取数分组</b>关键词，输入的同时结果会实时更新，匹配的文字会高亮显示。</div>
       </div>
       <div class="guide-step">
         <div class="guide-step-num">2</div>
-        <div class="guide-step-body">点击首页上方统计卡片（<span class="guide-tag guide-tag-blue">云产品</span><span class="guide-tag guide-tag-green">大数据</span><span class="guide-tag guide-tag-orange">安全</span><span class="guide-tag guide-tag-red">物联网</span>）或下方筛选标签，可按产品大类筛选。</div>
+        <div class="guide-step-body">点击首页上方统计卡片（<span class="guide-tag guide-tag-blue">云计算</span><span class="guide-tag guide-tag-green">大数据</span><span class="guide-tag guide-tag-orange">大安全</span><span class="guide-tag guide-tag-red">物联网</span>）或下方筛选标签，可按产品大类筛选。</div>
       </div>
       <div class="guide-step">
         <div class="guide-step-num">3</div>
@@ -384,7 +423,7 @@
       </div>
       <div class="guide-step">
         <div class="guide-step-num">4</div>
-        <div class="guide-step-body">每条规则包含：<b>积分标准</b>（红色边框区块）、<b>统计口径</b>、<b>积分举例</b>（黄底）、<b>备注</b>，向下滚动可查看完整内容。</div>
+        <div class="guide-step-body">每条规则包含：<b>积分标准</b>（红色边框区块）、<b>统计口径</b>、<b>备注/取数待明确规则</b>，并标注<b>存量维系积分类型</b>（新发展 / 存量维系）与修订批次。超长内容会自动折叠，点击「展开全文」查看完整口径。</div>
       </div>
     </div>
 
@@ -434,7 +473,7 @@
       </div>
       <div class="guide-step">
         <div class="guide-step-num">Q</div>
-        <div class="guide-step-body"><b>计算器没有对应的产品类型？</b>部分产品根据毛利率自动匹配计算器类型（毛利≥20% 或 10%~20%），在产品列表的「积分规则」列可以看到对应规则。</div>
+        <div class="guide-step-body"><b>计算器没有对应的产品类型？</b>产品会按毛利率自动匹配计算器类型（X≥20% / 20%&gt;X≥10% / X&lt;10% / 按物联网连接规则 / 专网项目上会毛利率），在产品列表的「积分规则」列可以看到对应算法。</div>
       </div>
       <div class="guide-step">
         <div class="guide-step-num">Q</div>
@@ -454,12 +493,68 @@
       </div>
       <div class="guide-step">
         <div class="guide-step-num">Q</div>
-        <div class="guide-step-body"><b>联通智家和智企光网焕新怎么算？</b>联通智家为<b>固定50分/户</b>；智企光网焕新区分趸交版（出账×100%）、分月版（出账×100% + 月出账×20%×5个月）和L版（12期100分/24期150分）。</div>
+        <div class="guide-step-body"><b>校区系数是什么？</b>校园类业务（移网单卡校园、校园融合、高价值移网校园）在计算时要额外乘以<b>校区系数</b>，每年 7 月评定一次：优势校区 ×0.9、均势校区 ×1、劣势校区 ×1.2。计算器中已内置该下拉选项。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>企业工作号/联通魔方的专项系数怎么来的？</b>按套餐 ID 区分：91423097（升级版 123 元档）×2、91423119（标准版 83 元档）×1.5、91422233（联通魔方）×1.1。计算器选择「A-企业工作号/联通魔方」后在下拉框选择对应档位即可。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>高价值移网的在网积分怎么算？</b>以发展月为 T 月，从 T+6 月至 T+15 月共 10 个月核发：入网首月月租在 [39,129) 的按<b>净月费×0.2</b>，[129,∞) 的按<b>净月费×0.5</b>；校园产品再乘校区系数。核发当月降档至 39 元以下则不核算。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>要客/商企/校园的「市场动作积分」能算吗？</b>可以。计算器已新增 D-要客、E-商企、F-校园三类市场动作积分（拜访频次、拜访覆盖率、商机录入、客户签约、圈校等），按线性得分与满分封顶自动汇总。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>物联网「净增收入」怎么理解？</b>按去年 12 月 31 日的出账收入拍照，今年按月与拍照收入比对，净增部分即为增量收入；另需按指定商品 ID 剔除相应连接商品。增量按实缴×7%、存量按实缴×3% 核算。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">Q</div>
+        <div class="guide-step-body"><b>联通智家和智企光网焕新怎么算？</b>联通智家为<b>固定50分/户</b>（沿用原有规则）；智企光网焕新区分趸交版（出账×100%）、分月版（出账×100% + 月出账×20%×5个月）和L版（12期100分/24期150分）。</div>
       </div>
     </div>
 
     <div class="guide-section">
-      <h3><span class="guide-icon">✨</span> 六、新功能介绍</h3>
+      <h3><span class="guide-icon">🆕</span> 六、v2026.06 规则更新要点</h3>
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div class="guide-step-body"><b>新增专项系数</b>：企业工作号、联通魔方按套餐 ID 给予 ×2 / ×1.5 / ×1.1 的专项系数，已新增独立计算器。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div class="guide-step-body"><b>新增校区系数</b>：校园类业务（校园移网单卡、校园融合、校园高价值移网）每年 7 月评定校区系数（0.9 / 1 / 1.2），已内置到计算器。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div class="guide-step-body"><b>新增高价值移网在网积分</b>：入网 [39,129) 档 T+6~T+15 每月净月费×0.2，[129,∞) 档 ×0.5；校园再乘校区系数。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div class="guide-step-body"><b>新增智企光网-焕新（FTTO）</b>：从原 FTTO 规则中独立成单独一类，趸交×100%、分月发展×100% + 出账×20%×5，另含 L 版固定积分。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">5</div>
+        <div class="guide-step-body"><b>价值经营倍数调整</b>：ARPU 提升档位倍数由原 1 / 1.2 / 1.5 调整为 <b>2 / 2.5 / 3</b>。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">6</div>
+        <div class="guide-step-body"><b>标品封顶值调整</b>：20%≤X 档存量封顶由 2000 调为 3000；20%&gt;X≥10% 档存量比例由 3% 调为 3.5%、封顶 2000；X&lt;10% 档存量封顶 1000。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">7</div>
+        <div class="guide-step-body"><b>新增存量维系积分类型</b>：每条规则标注「新发展 / 存量维系」，便于区分核发口径。产品清单同步更新为「标品清单取数更新」共 100 条，并标注取数分组（剔除物联网连接 / 本地产品毛利率 / 集团物联网产品）。</div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-step-num">8</div>
+        <div class="guide-step-body"><b>新增 D/E/F 市场动作计算器</b>：要客、商企、校园三类的拜访、商机、签约、圈校等市场动作积分可直接测算。</div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3><span class="guide-icon">✨</span> 七、功能亮点</h3>
       <div class="guide-step">
         <div class="guide-step-num">1</div>
         <div class="guide-step-body"><b>深色模式</b>：点击右上角 <span class="guide-tag guide-tag-blue">🌙</span> 按钮切换深色/浅色主题，系统会自动记住你的偏好。夜间使用更护眼。</div>
@@ -504,7 +599,7 @@
 
     <div class="guide-section" style="text-align:center;color:#888;font-size:13px;">
       <p>恩施联通政企专业线 · 积分查询系统</p>
-      <p style="margin-top:4px;">数据来源：附件1-恩施政企积分规则0323修订2026年05月</p>
+      <p style="margin-top:4px;">数据来源：附件1-恩施政企积分规则0623修订 · 标品清单取数更新</p>
       <p style="margin-top:4px;">反馈邮箱：<a href="https://mail.qq.com" target="_blank" rel="noopener" style="color:var(--unicom-red);">2097894441@qq.com</a></p>
     </div>
   </div>

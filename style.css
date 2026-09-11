@@ -87,9 +87,26 @@ body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-ser
 .cat-da{background:#f3e5f5;color:#7b1fa2}
 .cat-an{background:#e8f5e9;color:#2e7d32}
 .cat-wu{background:#fff3e0;color:#e65100}
+/* 大类徽章（新命名，对应 APP_DATA.category 原值） */
+.cat-cloud{background:#e3f2fd;color:#1565c0}
+.cat-bigdata{background:#f3e5f5;color:#7b1fa2}
+.cat-security{background:#e8f5e9;color:#2e7d32}
+.cat-iot{background:#fff3e0;color:#e65100}
 .margin-badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600}
 .margin-high{background:#e8f5e9;color:#2e7d32}
 .margin-mid{background:#fff3e0;color:#e65100}
+.margin-low{background:#fdecea;color:#c62828}
+.margin-iot{background:#e1f5fe;color:#0277bd}
+.margin-custom{background:#ede7f6;color:#4527a0}
+[data-theme="dark"] .cat-cloud{background:#0d2b45;color:#7ab8f5}
+[data-theme="dark"] .cat-bigdata{background:#2c1a3d;color:#c9a0f5}
+[data-theme="dark"] .cat-security{background:#12301c;color:#7ed99a}
+[data-theme="dark"] .cat-iot{background:#3a2410;color:#f0b070}
+[data-theme="dark"] .margin-high{background:#12301c;color:#7ed99a}
+[data-theme="dark"] .margin-mid{background:#3a2410;color:#f0b070}
+[data-theme="dark"] .margin-low{background:#3a1414;color:#f08a8a}
+[data-theme="dark"] .margin-iot{background:#0d2b45;color:#7ab8f5}
+[data-theme="dark"] .margin-custom{background:#241a3d;color:#b39ddb}
 .calc-link{color:var(--unicom-blue);text-decoration:underline;cursor:pointer;font-size:12px}
 .calc-link:hover{color:var(--unicom-red)}
 /* highlight */
@@ -112,6 +129,21 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .rule-item-example{font-size:12px;color:#555;line-height:1.7;margin-bottom:8px;white-space:pre-wrap;background:#fffde7;padding:10px 14px;border-radius:var(--radius-sm);border-left:3px solid #fdd835}
 .rule-item-note{font-size:11px;color:var(--text-muted);line-height:1.6;white-space:pre-wrap}
 .rule-label{display:inline-block;font-size:11px;color:var(--text-muted);margin-right:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+/* 规则标签行（存量维系类型 / 修订批次） */
+.rule-tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.rule-tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.rule-tag-points{background:#e8f5e9;color:#2e7d32}
+.rule-tag-revise{background:#f3e5f5;color:#7b1fa2}
+[data-theme="dark"] .rule-tag-points{background:#12301c;color:#7ed99a}
+[data-theme="dark"] .rule-tag-revise{background:#2c1a3d;color:#c9a0f5}
+/* 长文本折叠 */
+.rule-text{display:block}
+.rule-text.folded{display:-webkit-box;-webkit-line-clamp:4;line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;position:relative}
+.rule-foldable{position:relative;padding-bottom:20px}
+.rule-fold-toggle{position:absolute;right:0;bottom:0;font-size:11px;color:var(--unicom-blue);cursor:pointer;font-weight:600;padding:2px 6px;background:inherit;border-radius:4px;user-select:none}
+.rule-fold-toggle:hover{color:var(--unicom-red);text-decoration:underline}
+[data-theme="dark"] .rule-fold-toggle{color:#64b5f6}
+[data-theme="dark"] .rule-fold-toggle:hover{color:#ff7a7a}
 /* Calculator */
 .calc-card{background:#fff;border-radius:var(--radius);box-shadow:var(--card-shadow);padding:24px;margin-bottom:18px}
 .product-hint{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#e3f2fd 0%,#f0f7ff 100%);border:1px solid #90caf9;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;font-size:13px;animation:hintSlide .3s ease}
@@ -126,6 +158,12 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .calc-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block}
 .calc-input,.calc-select{width:100%;padding:10px 14px;border:2px solid var(--border-color);border-radius:var(--radius-sm);font-size:14px;outline:none;transition:var(--transition);background:#fff}
 .calc-input:focus,.calc-select:focus{border-color:var(--unicom-red);box-shadow:0 0 0 3px rgba(230,0,18,0.08)}
+/* 勾选框字段 */
+.calc-check{display:flex;align-items:center;gap:8px;padding:10px 14px;border:2px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);cursor:pointer;background:#fff;transition:var(--transition);min-height:42px}
+.calc-check:hover{border-color:var(--unicom-red)}
+.calc-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--unicom-red);cursor:pointer;flex-shrink:0}
+.calc-check span{line-height:1.4}
+[data-theme="dark"] .calc-check{background:#16162a;border-color:#2a2a3e;color:#bbb}
 .calc-result{background:linear-gradient(135deg,var(--unicom-red) 0%,var(--unicom-red-dark) 100%);color:#fff;border-radius:var(--radius);padding:28px 24px;text-align:center;margin-top:18px;box-shadow:0 6px 20px rgba(230,0,18,0.2);animation:resultPop .3s ease}
 @keyframes resultPop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .calc-result-num{font-size:38px;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,0.15)}
@@ -541,6 +579,17 @@ mark{background:var(--highlight);color:#333;padding:1px 3px;border-radius:3px;fo
 .formula-item-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .formula-item-formula{font-size:13px;color:var(--unicom-red);background:rgba(230,0,18,0.04);padding:8px 12px;border-radius:var(--radius-sm);border-left:3px solid var(--unicom-red);line-height:1.6;font-family:"Courier New",monospace}
 [data-theme="dark"] .formula-item-formula{background:rgba(230,0,18,0.1)}
+/* 联通云犀收费包参考表 */
+.yx-table-wrap{padding:4px 20px 16px;overflow-x:auto}
+.yx-table{width:100%;border-collapse:collapse;font-size:13px}
+.yx-table th{background:#f5f7fa;color:var(--text-secondary);font-size:12px;font-weight:700;text-align:left;padding:9px 12px;border-bottom:2px solid var(--border-color);white-space:nowrap}
+.yx-table td{padding:9px 12px;border-bottom:1px solid #f0f0f0;color:var(--text-primary)}
+.yx-table tr.yx-row{cursor:pointer;transition:var(--transition)}
+.yx-table tr.yx-row:hover{background:#fff5f5}
+.yx-table tr.yx-row:hover td:first-child{color:var(--unicom-red);font-weight:600}
+[data-theme="dark"] .yx-table th{background:#16162a;border-color:#2a2a3e}
+[data-theme="dark"] .yx-table td{border-color:#2a2a3e}
+[data-theme="dark"] .yx-table tr.yx-row:hover{background:#1f1f33}
 /* ===== Simulator Persistence ===== */
 .sim-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
 .sim-saved-badge{font-size:12px;color:#2e7d32;background:#e8f5e9;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:4px}
