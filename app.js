@@ -723,6 +723,251 @@ function updateCalcForm(){
   });
 }
 
+// ===== 公式分步推导生成器 =====
+// 返回步骤数组：[{label, value, hint, kind:'input'|'mul'|'add'|'cap'|'result'}]
+// 渲染在结果区下方，让用户看清每一步乘法和原因
+function getCalcSteps(type){
+  var steps=[];
+  function step(o){steps.push(o);}
+  function gv(id){var el=document.getElementById('calc_'+id);return el?(parseFloat(el.value)||0):0;}
+  function gs(id){var el=document.getElementById('calc_'+id);return el?el.value:'';}
+  function gc(id){var el=document.getElementById('calc_'+id);return el&&el.checked?1:0;}
+  function unit(name){return name;}
+  switch(type){
+    case'mobile_single':{
+      var r=gv('rent'),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay'));
+      step({label:'实际月租',value:r+' 元',hint:'客户套餐月租',kind:'input'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:u===0.8?'联通客户 ×0.8':'异网客户 ×1.2',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:f===0?'非一次性付清':'一次性付清',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*u*f).toFixed(1)+' 分',hint:'基本移网单卡积分',kind:'result'});
+      break;}
+    case'mobile_fusion':{
+      var r=gv('rent'),m=parseFloat(gs('mode')),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay'));
+      step({label:'融合主套餐实际月费',value:r+' 元',hint:'新移+新宽时取主套餐月费',kind:'input'});
+      step({label:'融合系数',value:'× '+m,hint:m===1.2?'新移+新宽 ×1.2':(m===1?'融合后≥融合前 ×1':'融合后<融合前 ×0.5'),kind:'mul'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:'异网客户',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:'一次性付清',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*m*u*f).toFixed(1)+' 分',hint:'不再重复计算移网单卡积分',kind:'result'});
+      break;}
+    case'mobile_school':{
+      var r=gv('rent'),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay')),c=parseFloat(gs('campus'));
+      step({label:'校园套餐月租',value:r+' 元',hint:'校园产品套餐',kind:'input'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:'异网客户',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:'一次性付清（1倍月租）',kind:'mul'});
+      step({label:'校区系数',value:'× '+c,hint:c===0.9?'优势校区 ×0.9':(c===1?'均势校区 ×1':'劣势校区 ×1.2'),kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*u*f*c).toFixed(1)+' 分',hint:'校区系数每年7月评定一次',kind:'result'});
+      break;}
+    case'mobile_school_fusion':{
+      var r=gv('rent'),m=parseFloat(gs('mode')),c=parseFloat(gs('campus')),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay'));
+      step({label:'校园融合主套餐月费',value:r+' 元',hint:'校园融合产品',kind:'input'});
+      step({label:'融合系数',value:'× '+m,hint:m===1.2?'新移+新宽 ×1.2':(m===1?'融合后≥融合前 ×1':'融合后<融合前 ×0.5'),kind:'mul'});
+      step({label:'校区系数',value:'× '+c,hint:c===0.9?'优势校区':(c===1?'均势校区':'劣势校区'),kind:'mul'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:'异网客户',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:'一次性付清',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*m*c*u*f).toFixed(1)+' 分',hint:'剔除三无验证',kind:'result'});
+      break;}
+    case'mobile_finance':{
+      var r=gv('rent'),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay'));
+      step({label:'实际月租',value:r+' 元',hint:'2B/2B2C金融合约用户',kind:'input'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:'异网客户',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:'一次性付清',kind:'mul'});
+      step({label:'金融合约倍数',value:'× 2',hint:'2B/2B2C金融合约专项',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*u*f*2).toFixed(1)+' 分',hint:'在移网标准分值基础上 ×2',kind:'result'});
+      break;}
+    case'mobile_voice':{
+      var r=gv('rent');step({label:'语音/流量包月租',value:r+' 元',hint:'生效当月实际月租',kind:'input'});
+      step({label:'积分倍数',value:'× 1',hint:'需月租≥10元，6个月内1次',kind:'mul'});
+      step({label:'合计积分',value:'= '+r.toFixed(1)+' 分',hint:'语音/流量包专项',kind:'result'});break;}
+    case'mobile_cloudxi':{
+      var r=gv('rent');var pkgEl=document.getElementById('calc_pkg');
+      var pkgName='';
+      if(pkgEl&&pkgEl.value){var opt=pkgEl.options[pkgEl.selectedIndex];pkgName=(opt?opt.text:'');}
+      step({label:'云犀包',value:pkgName||'已选云犀包',hint:'用户订购的联通云犀收费包',kind:'input'});
+      step({label:'月费',value:r+' 元',hint:'订购的云犀包月费',kind:'input'});
+      step({label:'积分倍数',value:'× 1',hint:'6个月1次',kind:'mul'});
+      step({label:'合计积分',value:'= '+r.toFixed(1)+' 分',hint:'联通云犀专项',kind:'result'});break;}
+    case'mobile_5g':{
+      var r=gv('rent');step({label:'5G随行专网包月费',value:r+' 元',hint:'随行专网包',kind:'input'});
+      step({label:'积分倍数',value:'× 1',hint:'5G随行专网专项',kind:'mul'});
+      step({label:'合计积分',value:'= '+r.toFixed(1)+' 分',hint:'5G专项',kind:'result'});break;}
+    case'mobile_enterprise_num':{
+      var r=gv('rent'),u=parseFloat(gs('isUnicom')),f=parseFloat(gs('firstPay')),sp=parseFloat(gs('special'));
+      step({label:'实际月租',value:r+' 元',hint:'企业工作号/联通魔方用户月租',kind:'input'});
+      if(u!==1)step({label:'异网系数',value:'× '+u,hint:'异网客户',kind:'mul'});
+      if(f!==1)step({label:'首缴系数',value:'× '+f,hint:'一次性付清',kind:'mul'});
+      step({label:'专项系数',value:'× '+sp,hint:sp===2?'企业工作号 ×2':(sp===1.5?'联通魔方 ×1.5':'专项 ×1.1'),kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*u*f*sp).toFixed(1)+' 分',hint:'企业工作号/联通魔方',kind:'result'});break;}
+    case'mobile_worknum':{
+      var r=gv('rent'),c=gv('count');
+      step({label:'工作号平台月租',value:r+' 元',hint:'隐私工作号平台月租（≥25元）',kind:'input'});
+      step({label:'项目号码数',value:'× '+c+' 个',hint:'该工作号平台承载的项目号码数',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*c).toFixed(1)+' 分',hint:'需完成实名认证并正式上架',kind:'result'});break;}
+    case'mobile_highvalue':{
+      var r=gv('rent'),b=parseFloat(gs('band')),mo=gv('months')||10;
+      step({label:'每月净月费',value:r+' 元',hint:'高价值移网在网用户',kind:'input'});
+      step({label:'档位系数',value:'× '+b,hint:b===0.5?'入网月租[129,∞) ×0.5':'入网月租[39,129) ×0.2',kind:'mul'});
+      step({label:'在网月份',value:'× '+mo+' 月',hint:'T+6~T+15月按月核发',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*b*mo).toFixed(1)+' 分',hint:'单月 '+(r*b).toFixed(1)+' 分 × '+mo+' 月',kind:'result'});break;}
+    case'mobile_highvalue_school':{
+      var r=gv('rent'),c=parseFloat(gs('campus')),mo=gv('months')||10;
+      step({label:'每月净月费',value:r+' 元',hint:'校园高价值移网',kind:'input'});
+      step({label:'基础倍数',value:'× 0.2',hint:'校园移网基础倍数',kind:'mul'});
+      step({label:'校区系数',value:'× '+c,hint:c===0.9?'优势校区':(c===1?'均势校区':'劣势校区'),kind:'mul'});
+      step({label:'在网月份',value:'× '+mo+' 月',hint:'T+6~T+15月',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*0.2*c*mo).toFixed(1)+' 分',hint:'2025年7月及以后入网数据',kind:'result'});break;}
+    case'mobile_value':{
+      var d=gv('diff'),l=parseFloat(gs('level'));
+      step({label:'ARPU提升差值',value:d+' 元',hint:'剔除优惠后的提升差值',kind:'input'});
+      step({label:'倍数',value:'× '+l,hint:l===3?'价值档位1 ×3':(l===2.5?'价值档位2 ×2.5':'价值档位3 ×2'),kind:'mul'});
+      step({label:'合计积分',value:'= '+(d*l).toFixed(1)+' 分',hint:'T+4月核算',kind:'result'});break;}
+    case'fixed_line_new':{
+      var r=gv('rent'),d=gv('discount')||1,po=gv('postPaid'),pr=gv('prePaid'),cnt=gc('counter');
+      var dp=r*0.14;var pp=(po*0.6+pr*0.8)*0.10;
+      step({label:'专线月租',value:r+' 元',hint:'专线新发展月租',kind:'input'});
+      step({label:'发展积分',value:dp.toFixed(1)+' 分',hint:r+' × 14% × '+d+'(折扣) = '+dp.toFixed(1),kind:'add'});
+      step({label:'回款积分',value:pp.toFixed(1)+' 分',hint:'('+po+'×0.6 + '+pr+'×0.8) × 10%',kind:'add'});
+      if(cnt)step({label:'异网策反叠加',value:'× 1.1',hint:'异网策反专项 +10%',kind:'mul'});
+      var total=Math.min(dp*d+pp,8000)*(cnt?1.1:1);
+      var capped=total>=8000;
+      step({label:'合计积分',value:'= '+total.toFixed(1)+' 分',hint:capped?'已触达月封顶 8000':'月封顶 8000',kind:capped?'cap':'result'});break;}
+    case'fixed_line_renew':{
+      var po=gv('postPaid'),pr=gv('prePaid'),d=gv('discount')||1;
+      var raw=(po*0.6+pr*0.8)*d*0.03;
+      var total=Math.min(raw,5000);
+      step({label:'后付金额',value:po+' 元',hint:'后付收入',kind:'input'});
+      step({label:'预付金额',value:pr+' 元',hint:'预付收入',kind:'input'});
+      step({label:'折扣系数',value:'× '+d,hint:'客户折扣',kind:'mul'});
+      step({label:'积分比例',value:'× 3%',hint:'存量续签费率',kind:'mul'});
+      step({label:'合计积分',value:'= '+total.toFixed(1)+' 分',hint:total>=5000?'已触达月封顶 5000':'月封顶 5000',kind:total>=5000?'cap':'result'});break;}
+    case'fixed_broadband_new':{
+      var r=gv('rent'),pt=parseFloat(gs('payType'));
+      step({label:'单宽套餐月资费',value:r+' 元',hint:'单宽新发展',kind:'input'});
+      step({label:'趸交系数',value:'× '+pt,hint:pt===0.8?'非趸交 ×0.8':(pt===1.1?'趸交6月 ×1.1':'趸交12月及以上 ×1.2'),kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*pt).toFixed(1)+' 分',hint:'单宽新发展',kind:'result'});break;}
+    case'fixed_broadband_renew':{
+      var r=gv('rent');
+      step({label:'单宽套餐月资费',value:r+' 元',hint:'单宽续费',kind:'input'});
+      step({label:'续费比例',value:'× 5%',hint:'入网13-36月，次月核发',kind:'mul'});
+      step({label:'合计积分',value:'= '+(r*0.05).toFixed(1)+' 分',hint:'单宽续费',kind:'result'});break;}
+    case'fixed_ftto':{
+      var b=gv('bill'),ver=gs('ver');
+      step({label:'首月出账金额',value:b+' 元',hint:'智企光网FTTO',kind:'input'});
+      if(ver==='lump50'){step({label:'趸交比例',value:'× 50%',hint:'趸交版',kind:'mul'});step({label:'合计积分',value:'= '+(b*0.5).toFixed(1)+' 分',hint:'T+1~T+6月一次性核发',kind:'result'});}
+      else{step({label:'发展积分',value:b.toFixed(1)+' 分',hint:b+' × 100% (T+1月)',kind:'add'});step({label:'另计出账积分',value:'月出账 × 20% × 12月',hint:'T+2月起按月核发',kind:'note'});step({label:'合计积分',value:'= '+b.toFixed(1)+' 分',hint:'发展积分 + 后续出账积分',kind:'result'});}
+      break;}
+    case'fixed_ftto_new':{
+      var b=gv('bill'),ver=gs('ver');
+      step({label:'首月出账金额',value:b+' 元',hint:'智企光网焕新FTTO',kind:'input'});
+      if(ver==='lump100'){step({label:'趸交比例',value:'× 100%',hint:'焕新趸交版',kind:'mul'});step({label:'合计积分',value:'= '+b.toFixed(1)+' 分',hint:'T+1月一次性',kind:'result'});}
+      else if(ver==='month'){step({label:'发展积分',value:b.toFixed(1)+' 分',hint:b+' × 100%',kind:'add'});step({label:'合计积分',value:'= '+b.toFixed(1)+' 分',hint:'另计月出账 × 20% × 5月',kind:'result'});}
+      else if(ver==='l12'){step({label:'L版12期',value:'固定 100 分',hint:'L版12期固定积分',kind:'input'});step({label:'合计积分',value:'= 100 分',hint:'L版12期',kind:'result'});}
+      else{step({label:'L版24期',value:'固定 150 分',hint:'L版24期固定积分',kind:'input'});step({label:'合计积分',value:'= 150 分',hint:'L版24期',kind:'result'});}
+      break;}
+    case'fixed_zhijia':{
+      var c=gv('count')||1;
+      step({label:'智家户数',value:c+' 户',hint:'联通智家发展户数',kind:'input'});
+      step({label:'每户积分',value:'× 50',hint:'50 分/户',kind:'mul'});
+      step({label:'合计积分',value:'= '+(50*c).toFixed(1)+' 分',hint:'T+1月一次性核发',kind:'result'});break;}
+    case'fixed_voice_new':{
+      var b=gv('bill');
+      step({label:'固话月出账',value:b+' 元',hint:'固话/语音发展',kind:'input'});
+      step({label:'积分比例',value:'× 12%',hint:'入网1-12月',kind:'mul'});
+      var capped=b*0.12>=2000;
+      step({label:'合计积分',value:'= '+Math.min(b*0.12,2000).toFixed(1)+' 分',hint:capped?'已触达单月单号封顶 2000':'单月单号封顶 2000',kind:capped?'cap':'result'});break;}
+    case'fixed_voice_renew':{
+      var b=gv('bill');
+      step({label:'固话月出账',value:b+' 元',hint:'固话/语音续费',kind:'input'});
+      step({label:'积分比例',value:'× 5%',hint:'入网13-24月',kind:'mul'});
+      var capped=b*0.05>=1000;
+      step({label:'合计积分',value:'= '+Math.min(b*0.05,1000).toFixed(1)+' 分',hint:capped?'已触达单月单号封顶 1000':'单月单号封顶 1000',kind:capped?'cap':'result'});break;}
+    case'calc_std_high':{
+      var a=gv('amount'),t=parseFloat(gs('type'));var cap=t===7?5000:3000;
+      step({label:'实缴金额',value:a+' 元',hint:'标品毛利率≥20%',kind:'input'});
+      step({label:'积分比例',value:'× '+t+'%',hint:t===7?'增量 ×7%':'存量 ×5%',kind:'mul'});
+      step({label:'积分上限',value:'≤ '+cap+' 分',hint:'封顶值',kind:'cap'});
+      step({label:'合计积分',value:'= '+Math.min(a*t/100,cap).toFixed(1)+' 分',hint:a+' × '+t+'% = '+(a*t/100).toFixed(1)+' 分',kind:'result'});break;}
+    case'calc_std_mid':{
+      var a=gv('amount'),t=parseFloat(gs('type'));var cap=t===5?3000:2000;
+      step({label:'实缴金额',value:a+' 元',hint:'标品毛利率20%>X≥10%',kind:'input'});
+      step({label:'积分比例',value:'× '+t+'%',hint:t===5?'增量 ×5%':'存量 ×3.5%',kind:'mul'});
+      step({label:'积分上限',value:'≤ '+cap+' 分',hint:'封顶值',kind:'cap'});
+      step({label:'合计积分',value:'= '+Math.min(a*t/100,cap).toFixed(1)+' 分',hint:a+' × '+t+'% = '+(a*t/100).toFixed(1)+' 分',kind:'result'});break;}
+    case'calc_std_low':{
+      var a=gv('amount'),x=gv('actualMargin'),sm=gv('stdMargin')||20,t=gs('type');
+      var perYuan=sm>=20?0.07:0.05;
+      var raw=(x/sm)*a*perYuan;
+      step({label:'实缴金额',value:a+' 元',hint:'标品毛利率<10%',kind:'input'});
+      step({label:'实际/标准毛利率',value:x+'/'+sm+'%',hint:'毛利率折算',kind:'input'});
+      step({label:'每元积分',value:perYuan*100+'%',hint:'标准毛利率对应比例',kind:'mul'});
+      if(t==='renew'){step({label:'存量折算',value:'× 50%',hint:'存量续费打5折',kind:'mul'});
+        step({label:'积分上限',value:'≤ 1000 分',hint:'存量封顶',kind:'cap'});
+        step({label:'合计积分',value:'= '+Math.min(raw*0.5,1000).toFixed(1)+' 分',hint:'('+x+'/'+sm+') × '+a+' × '+perYuan*100+'% × 50%',kind:'result'});}
+      else{step({label:'积分上限',value:'≤ 3000 分',hint:'增量封顶',kind:'cap'});
+        step({label:'合计积分',value:'= '+Math.min(raw,3000).toFixed(1)+' 分',hint:'('+x+'/'+sm+') × '+a+' × '+perYuan*100+'%',kind:'result'});}
+      break;}
+    case'calc_iot':{
+      var a=gv('amount'),t=parseFloat(gs('type'));var cap=t===7?5000:3000;
+      step({label:'实缴金额',value:a+' 元',hint:'物联网连接',kind:'input'});
+      step({label:'积分比例',value:'× '+t+'%',hint:t===7?'增量 ×7%':'存量 ×3%',kind:'mul'});
+      step({label:'积分上限',value:'≤ '+cap+' 分',hint:'封顶值',kind:'cap'});
+      step({label:'合计积分',value:'= '+Math.min(a*t/100,cap).toFixed(1)+' 分',hint:'物联网连接',kind:'result'});break;}
+    case'calc_ict':{
+      var a=gv('amount');
+      if(a>200){step({label:'计收金额',value:a+' 万元',hint:'>200万不参与',kind:'input'});step({label:'合计积分',value:'= 0 分',hint:'超出200万不核算',kind:'result'});}
+      else{var yuan=a*10000;
+        step({label:'计收金额',value:a+' 万元 ('+yuan+' 元)',hint:'新兴ICT',kind:'input'});
+        step({label:'积分换算',value:'÷ 1000',hint:'每1000元 = 1分',kind:'mul'});
+        var total=Math.min(yuan/1000,10000);
+        step({label:'合计积分',value:'= '+total.toFixed(1)+' 分',hint:total>=10000?'已触达年封顶 10000':'年封顶 10000',kind:total>=10000?'cap':'result'});}
+      break;}
+    case'act_dkh':{
+      var freq=gv('visitFreq'),cov=gv('visitCov'),opp=gv('oppCount'),cust=gv('custCount');
+      var s1=Math.min(freq,16)/16*100,s2=Math.min(cov,20)/20*50,s3=Math.min(opp*20,100),s4=Math.min(cust*10,50);
+      step({label:'拜访频次',value:s1.toFixed(1)+' 分',hint:'100 × '+Math.min(freq,16)+'/16 = '+s1.toFixed(1),kind:'add'});
+      step({label:'拜访覆盖率',value:s2.toFixed(1)+' 分',hint:'50 × '+Math.min(cov,20)+'/20 = '+s2.toFixed(1),kind:'add'});
+      step({label:'商机录入',value:s3.toFixed(1)+' 分',hint:opp+' 条 × 20 = '+s3.toFixed(1),kind:'add'});
+      step({label:'客户资料完整性',value:s4.toFixed(1)+' 分',hint:cust+' 户 × 10 = '+s4.toFixed(1),kind:'add'});
+      step({label:'合计积分',value:'= '+(s1+s2+s3+s4).toFixed(1)+' 分',hint:'要客市场动作总分',kind:'result'});break;}
+    case'act_sq':{
+      var vn=gv('visitCount'),nc=gv('newCust'),op=gv('oppCount'),sg=gv('signCount'),tc=gv('toolCount');
+      var e1=Math.min(vn,10)/10*100,e2=Math.min(nc*5+op*10+sg*30,100),e3=Math.min(tc,5)*20;
+      step({label:'客户拜访',value:e1.toFixed(1)+' 分',hint:'100 × '+Math.min(vn,10)+'/10 = '+e1.toFixed(1),kind:'add'});
+      step({label:'销售行为',value:e2.toFixed(1)+' 分',hint:'潜客'+nc+'×5 + 商机'+op+'×10 + 签约'+sg+'×30',kind:'add'});
+      step({label:'数字化工具',value:e3.toFixed(1)+' 分',hint:'登录'+tc+'次 × 20',kind:'add'});
+      step({label:'合计积分',value:'= '+(e1+e2+e3).toFixed(1)+' 分',hint:'商企市场动作总分',kind:'result'});break;}
+    case'act_xy':{
+      var xn=gv('visitCount'),sc=gv('schoolCount'),ev=gv('eventCount'),xo=gv('oppCount');
+      var f1=Math.min(xn,10)/10*100,f2=Math.min(sc*50+ev*20,100),f3=Math.min(xo*20,100);
+      step({label:'客户拜访',value:f1.toFixed(1)+' 分',hint:'100 × '+Math.min(xn,10)+'/10 = '+f1.toFixed(1),kind:'add'});
+      step({label:'营销动作',value:f2.toFixed(1)+' 分',hint:'圈校'+sc+'×50 + 营销'+ev+'×20',kind:'add'});
+      step({label:'商机录入',value:f3.toFixed(1)+' 分',hint:xo+' 条 × 20',kind:'add'});
+      step({label:'合计积分',value:'= '+(f1+f2+f3).toFixed(1)+' 分',hint:'校园市场动作总分',kind:'result'});break;}
+  }
+  return steps;
+}
+
+// ===== 渲染分步推导为 HTML =====
+function renderCalcSteps(steps){
+  var box=document.getElementById('calcSteps');
+  if(!box)return;
+  if(!steps||!steps.length){box.innerHTML='';box.style.display='none';return;}
+  var html='<div class="calc-steps-title">📊 计算推导</div><div class="calc-steps-list">';
+  steps.forEach(function(s,i){
+    var idxClass='calc-step'+(s.kind==='result'?' step-result':'');
+    var opIcon=s.kind==='mul'?'×':(s.kind==='add'?'+':(s.kind==='cap'?'⩽':''));
+    html+='<div class="'+idxClass+'" title="'+(s.hint||'')+'">';
+    html+='<div class="calc-step-index">'+(i+1)+'</div>';
+    html+='<div class="calc-step-content"><div class="calc-step-label">'+(opIcon?'<span style="opacity:.7;margin-right:2px;">'+opIcon+'</span>':'')+s.label+'</div>';
+    if(s.hint)html+='<div class="calc-step-hint">'+s.hint+'</div>';
+    html+='</div>';
+    html+='<div class="calc-step-value">'+s.value+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+  box.style.display='block';
+}
+
 // ===== 计算积分 =====
 function doCalc(opts){
   var type=document.getElementById('calcType').value;
@@ -931,6 +1176,8 @@ function doCalc(opts){
   // 用 countUp 动画展示结果（视觉精致化）
   animateNumber(document.getElementById('calcResultNum'),points,1);
   document.getElementById('calcDetail').textContent=detail;
+  // 渲染公式分步推导链（v2026.08 新增）
+  renderCalcSteps(getCalcSteps(type));
   // 保存到历史（仅在提交模式下：按钮点击或回车）
   if(opts&&opts.save)saveToHistory(type,points.toFixed(1),detail);
 }
@@ -966,22 +1213,21 @@ document.getElementById('copyResultBtn').addEventListener('click',function(){
   var typeLabel=type.options[type.selectedIndex]?type.options[type.selectedIndex].text:'';
   var points=document.getElementById('calcResultNum').textContent;
   var detail=document.getElementById('calcDetail').textContent;
-  var text='【积分计算结果】\n业务类型: '+typeLabel+'\n预计积分: '+points+' 分\n\n'+detail+'\n\n(恩施联通政企积分查询系统)';
+  // 拼接步骤推导一起复制（更完整）
+  var steps=document.getElementById('calcSteps').innerText||'';
+  var text='【积分计算结果】\n业务类型: '+typeLabel+'\n预计积分: '+points+' 分\n\n'+detail+'\n\n'+(steps?'推导步骤:\n'+steps+'\n\n':'')+'(恩施联通政企积分查询系统)';
   var self=this;
+  var setOk=function(){self.classList.add('copied');self.querySelector('.btn-text').textContent='已复制';setTimeout(function(){self.classList.remove('copied');self.querySelector('.btn-text').textContent='复制结果';},2000);showToast('已复制到剪贴板');};
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){
-      self.classList.add('copied');self.textContent='已复制';
-      setTimeout(function(){self.classList.remove('copied');self.textContent='复制结果';},2000);
-      showToast('已复制到剪贴板');
-    }).catch(function(){fallbackCopy(text,self);});
+    navigator.clipboard.writeText(text).then(setOk).catch(function(){fallbackCopy(text,self);});
   }else{fallbackCopy(text,self);}
 });
 function fallbackCopy(text,btn){
   var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy');
-    btn.classList.add('copied');btn.textContent='已复制';
-    setTimeout(function(){btn.classList.remove('copied');btn.textContent='复制结果';},2000);
+    btn.classList.add('copied');btn.querySelector('.btn-text').textContent='已复制';
+    setTimeout(function(){btn.classList.remove('copied');btn.querySelector('.btn-text').textContent='复制结果';},2000);
     showToast('已复制到剪贴板');
   }catch(e){showToast('复制失败,请手动选择复制');}
   document.body.removeChild(ta);
@@ -2066,36 +2312,307 @@ document.getElementById('yunxiHeader').addEventListener('click',function(){
   icon.textContent=body.classList.contains('open')?'−':'+';
 });
 
-// ===== 计算器结果分享 =====
+// ===== 计算器结果分享（URL + 文本双通道） =====
+// 把当前 calc type + 所有输入值写入 URL hash，复制链接给他人打开直接看到结果
+function getCalcStateFromForm(){
+  var state={t:document.getElementById('calcType').value};
+  document.querySelectorAll('#calcFormArea input,#calcFormArea select').forEach(function(el){
+    if(!el.id||!el.id.startsWith('calc_'))return;
+    var key=el.id.replace('calc_','');
+    if(el.type==='checkbox')state[key]=el.checked?1:0;
+    else if(el.value!=='')state[key]=el.value;
+  });
+  return state;
+}
+function applyCalcStateFromHash(){
+  var hash=location.hash;
+  if(hash.indexOf('#calc=')!==0)return false;
+  try{
+    var state=JSON.parse(decodeURIComponent(hash.substring(6)));
+    if(!state.t)return false;
+    var sel=document.getElementById('calcType');
+    if(sel){sel.value=state.t;sel.dispatchEvent(new Event('change'));}
+    setTimeout(function(){
+      Object.keys(state).forEach(function(k){
+        if(k==='t')return;
+        var el=document.getElementById('calc_'+k);
+        if(!el)return;
+        if(el.type==='checkbox')el.checked=!!state[k];
+        else el.value=state[k];
+      });
+      doCalc({save:false});
+      showToast('已加载分享的计算');
+    },50);
+    return true;
+  }catch(e){return false;}
+}
+function buildShareLink(){
+  var state=getCalcStateFromForm();
+  return location.origin+location.pathname+'#calc='+encodeURIComponent(JSON.stringify(state));
+}
 document.getElementById('shareResultBtn').addEventListener('click',function(){
   var type=document.getElementById('calcType');
   var typeLabel=type.options[type.selectedIndex]?type.options[type.selectedIndex].text:'';
   var points=document.getElementById('calcResultNum').textContent;
-  var detail=document.getElementById('calcDetail').textContent;
-  var text='📊 积分计算结果\n━━━━━━━━━━\n业务类型: '+typeLabel+'\n预计积分: '+points+' 分\n\n'+detail+'\n━━━━━━━━━━\n(恩施联通政企积分查询系统)';
+  var link=buildShareLink();
+  var text='📊 恩施联通积分计算结果\n━━━━━━━━━━\n业务类型: '+typeLabel+'\n预计积分: '+points+' 分\n\n🔗 打开看完整推导:\n'+link+'\n━━━━━━━━━━\n(恩施联通政企积分查询系统)';
   var self=this;
+  var ok=function(){self.classList.add('shared');self.querySelector('.btn-text').textContent='✓ 已复制';setTimeout(function(){self.classList.remove('shared');self.querySelector('.btn-text').textContent='复制分享链接';},2000);showToast('分享链接已复制，可粘贴到微信/QQ');};
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){
-      self.classList.add('shared');self.textContent='✓ 已复制';
-      setTimeout(function(){self.classList.remove('shared');self.textContent='分享';},2000);
-      showToast('已复制，可粘贴到微信/QQ分享');
-    }).catch(function(){
-      fallbackShare(text,self);
-    });
-  }else{
-    fallbackShare(text,self);
-  }
+    navigator.clipboard.writeText(text).then(ok).catch(function(){fallbackShare(text,self);});
+  }else{fallbackShare(text,self);}
 });
 function fallbackShare(text,btn){
   var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy');
-    btn.classList.add('shared');btn.textContent='✓ 已复制';
-    setTimeout(function(){btn.classList.remove('shared');btn.textContent='分享';},2000);
-    showToast('已复制，可粘贴到微信/QQ分享');
+    btn.classList.add('shared');btn.querySelector('.btn-text').textContent='✓ 已复制';
+    setTimeout(function(){btn.classList.remove('shared');btn.querySelector('.btn-text').textContent='复制分享链接';},2000);
+    showToast('分享链接已复制');
   }catch(e){showToast('复制失败，请手动选择复制');}
   document.body.removeChild(ta);
 }
+
+// ===== 导出 PDF（浏览器原生打印） =====
+// 1) 切换到 PDF 专用 class（隐藏导航/底部/无关 UI）
+// 2) 准备 .print-only 报告页（logo + 标题 + 客户名 + 步骤）
+// 3) 调起 window.print()，用户选「另存为 PDF」
+function exportPdf(){
+  // 收集客户名（可选）
+  var customerName=document.getElementById('pdfCustomerName');
+  if(!customerName){
+    customerName=prompt('请输入客户/单位名称（可留空）：','');
+    if(customerName===null)return;
+  }
+  var type=document.getElementById('calcType');
+  var typeLabel=type.options[type.selectedIndex]?type.options[type.selectedIndex].text:'';
+  var points=document.getElementById('calcResultNum').textContent;
+  var detail=document.getElementById('calcDetail').textContent;
+  // 准备打印封面
+  var cover=document.getElementById('pdfCover');
+  if(!cover){
+    cover=document.createElement('div');
+    cover.id='pdfCover';
+    cover.className='print-only pdf-cover';
+    document.body.appendChild(cover);
+  }
+  var now=new Date();
+  var dateStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var stepsHtml=document.getElementById('calcSteps').innerHTML;
+  cover.innerHTML=
+    '<div class="pdf-cover-header">'+
+      '<div class="pdf-logo">中国联通</div>'+
+      '<div class="pdf-title">政企积分计算报告</div>'+
+      '<div class="pdf-meta">'+
+        '<span>恩施分公司</span>'+
+        '<span>出具日期：'+dateStr+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="pdf-body">'+
+      (customerName?'<div class="pdf-customer">客户/单位：<strong>'+customerName+'</strong></div>':'')+
+      '<div class="pdf-section"><div class="pdf-section-label">业务类型</div><div class="pdf-section-value">'+typeLabel+'</div></div>'+
+      '<div class="pdf-section pdf-result-block"><div class="pdf-section-label">预计积分</div><div class="pdf-section-value pdf-big">'+points+' <span class="pdf-unit">分</span></div></div>'+
+      '<div class="pdf-section"><div class="pdf-section-label">计算明细</div><div class="pdf-section-value pdf-pre">'+detail+'</div></div>'+
+      '<div class="pdf-section"><div class="pdf-section-label">推导步骤</div><div class="pdf-section-value pdf-steps">'+stepsHtml+'</div></div>'+
+    '</div>'+
+    '<div class="pdf-footer">'+
+      '<div>本报告由「恩施联通政企积分查询系统」自动生成 · 基于 0623 修订版积分规则</div>'+
+      '<div>仅供内部参考，不作为对外结算依据</div>'+
+    '</div>';
+  // 触发打印
+  document.body.classList.add('pdf-printing');
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){document.body.classList.remove('pdf-printing');},500);
+  },50);
+}
+document.getElementById('exportPdfBtn').addEventListener('click',exportPdf);
+
+// ===== 命令面板 Cmd+K =====
+// 全局搜索：计算器 / 产品 / 规则 / 系数，支持键盘导航
+var cmdData=[];
+var cmdIdx=[];
+var cmdSelectedIdx=-1;
+function buildCmdIndex(){
+  // 计算器
+  var calcs=Object.keys(calcTypeLabels||{}).map(function(k){
+    var label=calcTypeLabels[k]||k;
+    return {id:k,name:label,desc:'',type:'calc',tag:'计算器',action:function(){document.getElementById('calcType').value=k;document.getElementById('calcType').dispatchEvent(new Event('change'));switchTab('calculator');},icon:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="10" y2="11"/><line x1="13" y1="11" x2="15" y2="11"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="13" y1="15" x2="15" y2="15"/></svg>'};
+  });
+  // 产品
+  var products=(APP_DATA.products||[]).map(function(p){
+    var priceStr=(p.price!==undefined?(p.price+'元/月'):'')+(p.spec?'· '+p.spec:'');
+    return {id:p.id||p.name,name:p.name||'',desc:priceStr,type:'product',tag:p.cat||'标品',action:function(){switchTab('products');setTimeout(function(){var inp=document.getElementById('productSearch');if(inp){inp.value=p.name||'';inp.dispatchEvent(new Event('input'));}},50);},icon:'<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'};
+  });
+  // 规则
+  var rules=(APP_DATA.rules||[]).map(function(r){
+    return {id:r.id||r.name,name:r.name||'',desc:r.detail||r.scope||'',type:'rule',tag:r.cat||'规则',action:function(){switchTab('rules');setTimeout(function(){var inp=document.getElementById('ruleSearch');if(inp){inp.value=r.name||'';inp.dispatchEvent(new Event('input'));}},50);},icon:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'};
+  });
+  // 系数
+  var coeffs=(APP_DATA.coefficients||[]).map(function(c){
+    return {id:c.name,name:c.name||'',desc:(c.min!==undefined?'档位 '+c.min+'~'+c.max:'')+(c.rate?'· '+c.rate:''),type:'coeff',tag:c.cat||'系数',action:function(){switchTab('coefficient');setTimeout(function(){var inp=document.getElementById('coeffSearch');if(inp){inp.value=c.name||'';inp.dispatchEvent(new Event('input'));}},50);},icon:'<svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>'};
+  });
+  cmdData=calcs.concat(products).concat(rules).concat(coeffs);
+  // 按 type 分组索引
+  cmdIdx={
+    calc:calcs,
+    product:products,
+    rule:rules,
+    coeff:coeffs
+  };
+}
+function openCmd(){
+  var p=document.getElementById('cmdPalette');
+  if(!p.classList.contains('open')){
+    if(!cmdData.length)buildCmdIndex();
+    p.classList.add('open');
+    p.setAttribute('aria-hidden','false');
+    setTimeout(function(){document.getElementById('cmdInput').focus();},50);
+  }
+}
+function closeCmd(){
+  var p=document.getElementById('cmdPalette');
+  p.classList.remove('open');
+  p.setAttribute('aria-hidden','true');
+  var inp=document.getElementById('cmdInput');
+  inp.value='';
+  renderCmdResults('');
+}
+function fuzzyMatch(item,q){
+  if(!q)return true;
+  q=q.toLowerCase();
+  var name=(item.name||'').toLowerCase();
+  var desc=(item.desc||'').toLowerCase();
+  var tag=(item.tag||'').toLowerCase();
+  // 简单包含 + 字符顺序匹配
+  if(name.indexOf(q)!==-1||desc.indexOf(q)!==-1||tag.indexOf(q)!==-1)return true;
+  // 字符顺序模糊匹配
+  var last=-1,ok=true;
+  for(var i=0;i<q.length;i++){
+    var idx=name.indexOf(q[i],last+1);
+    if(idx===-1){ok=false;break;}
+    last=idx;
+  }
+  return ok;
+}
+function renderCmdResults(q){
+  var box=document.getElementById('cmdResults');
+  var countBox=document.getElementById('cmdCount');
+  if(!q){
+    box.innerHTML='<div class="cmd-hint"><div class="cmd-hint-title">💡 快捷命令</div><div class="cmd-hint-list"><div><kbd>↑↓</kbd> 选择</div><div><kbd>↵</kbd> 打开</div><div><kbd>ESC</kbd> 关闭</div><div>输入「<b>校园</b>」「<b>专线</b>」「<b>99</b>」试试</div></div></div>';
+    countBox.textContent='';
+    cmdSelectedIdx=-1;
+    return;
+  }
+  var groups=[
+    {key:'calc',name:'计算器',icon:'🧮'},
+    {key:'product',name:'标品',icon:'📦'},
+    {key:'rule',name:'规则',icon:'📋'},
+    {key:'coeff',name:'系数',icon:'📊'}
+  ];
+  var html='';
+  var totalHits=0;
+  var allItems=[];
+  groups.forEach(function(g){
+    var items=(cmdIdx[g.key]||[]).filter(function(it){return fuzzyMatch(it,q);});
+    if(!items.length)return;
+    items=items.slice(0,8);// 每组最多 8 个
+    html+='<div class="cmd-group" data-group="'+g.key+'"><div class="cmd-group-title">'+g.icon+' '+g.name+'<span class="cmd-group-count">'+items.length+'</span></div>';
+    items.forEach(function(it){
+      var idx=allItems.length;
+      html+='<div class="cmd-item" data-idx="'+idx+'">';
+      html+='<div class="cmd-item-icon">'+it.icon+'</div>';
+      html+='<div class="cmd-item-text"><div class="cmd-item-name">'+highlight(it.name,q)+'</div>';
+      if(it.desc)html+='<div class="cmd-item-desc">'+highlight(it.desc,q)+'</div>';
+      html+='</div>';
+      html+='<div class="cmd-item-tag">'+it.tag+'</div>';
+      html+='</div>';
+      allItems.push(it);
+    });
+    html+='</div>';
+    totalHits+=items.length;
+  });
+  if(!totalHits){
+    box.innerHTML='<div class="cmd-empty"><div class="cmd-empty-icon">🔍</div>没有匹配项<br><span style="font-size:11px;color:var(--text-muted)">试试「校园」「专线」「99」</span></div>';
+    countBox.textContent='0 结果';
+    cmdSelectedIdx=-1;
+    return;
+  }
+  box.innerHTML=html;
+  countBox.textContent=totalHits+' 结果';
+  cmdSelectedIdx=0;
+  updateCmdSelection();
+}
+function highlight(text,q){
+  if(!q||!text)return escapeHtml(text);
+  var lc=text.toLowerCase();
+  var qc=q.toLowerCase();
+  var idx=lc.indexOf(qc);
+  if(idx===-1)return escapeHtml(text);
+  return escapeHtml(text.substring(0,idx))+'<b style="color:var(--unicom-red);background:rgba(230,0,18,.08);padding:0 2px;border-radius:2px">'+escapeHtml(text.substring(idx,idx+q.length))+'</b>'+escapeHtml(text.substring(idx+q.length));
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function updateCmdSelection(){
+  var items=document.querySelectorAll('.cmd-item');
+  items.forEach(function(el,i){
+    el.classList.toggle('selected',i===cmdSelectedIdx);
+    if(i===cmdSelectedIdx)el.scrollIntoView({block:'nearest'});
+  });
+}
+// 绑定键盘
+document.addEventListener('keydown',function(e){
+  // Cmd+K / Ctrl+K 打开
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    openCmd();
+    return;
+  }
+  // / 键打开（仅在非输入区）
+  if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!document.activeElement.isContentEditable){
+    e.preventDefault();
+    openCmd();
+    return;
+  }
+  // 已打开时处理键盘导航
+  var p=document.getElementById('cmdPalette');
+  if(!p.classList.contains('open'))return;
+  if(e.key==='Escape'){e.preventDefault();closeCmd();return;}
+  var items=document.querySelectorAll('.cmd-item');
+  if(!items.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();cmdSelectedIdx=Math.min(items.length-1,cmdSelectedIdx+1);updateCmdSelection();}
+  else if(e.key==='ArrowUp'){e.preventDefault();cmdSelectedIdx=Math.max(0,cmdSelectedIdx-1);updateCmdSelection();}
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    var sel=document.querySelector('.cmd-item.selected');
+    if(sel){
+      var idx=parseInt(sel.getAttribute('data-idx'),10);
+      // 找到对应的 item
+      var allItems=Array.from(document.querySelectorAll('.cmd-group')).reduce(function(acc,g){
+        var groupKey=g.getAttribute('data-group');
+        return acc.concat(cmdIdx[groupKey]||[]);
+      },[]);
+      var it=allItems[idx];
+      if(it&&it.action){it.action();closeCmd();showToast('已跳转：'+it.name);}
+    }
+  }
+});
+document.getElementById('cmdInput').addEventListener('input',function(e){renderCmdResults(this.value.trim());});
+document.getElementById('cmdBackdrop').addEventListener('click',closeCmd);
+
+// 顶栏快捷搜索按钮（移动端/不熟悉快捷键的用户）
+function addCmdTrigger(){
+  var trigger=document.createElement('button');
+  trigger.className='cmd-trigger';
+  trigger.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 搜索 <kbd>⌘K</kbd>';
+  trigger.title='点击打开命令面板';
+  trigger.addEventListener('click',openCmd);
+  // 插入 header-right
+  var hr=document.querySelector('.header-right');
+  if(hr){hr.insertBefore(trigger,hr.firstChild);}
+}
+addCmdTrigger();
+// init 时构建索引
+buildCmdIndex();
 
 // ===== 模拟器数据持久化 =====
 var SIM_SAVE_KEY='simulator_data';
@@ -2241,6 +2758,11 @@ calcSimulator();
 renderHistory();
 renderFavorites();
 updateCompareBadge();
+
+// 应用分享链接 hash（如果有）
+setTimeout(function(){applyCalcStateFromHash();},100);
+// 监听 hashchange，外部修改 URL 时也应用
+window.addEventListener('hashchange',function(){applyCalcStateFromHash();});
 
 // 恢复上次浏览的Tab
 try{

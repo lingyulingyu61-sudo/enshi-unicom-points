@@ -56,7 +56,7 @@
   </div>
   <div class="header-right">
     <span class="header-badge"><span class="dot"></span>实时数据</span>
-    <span class="version-badge">v2026.07</span>
+    <span class="version-badge">v2026.08</span>
     <button class="theme-toggle" id="themeToggle" title="切换深色模式" aria-label="切换主题">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
@@ -88,7 +88,32 @@
     使用说明
   </div>
 </div>
-<!-- 移动端底部导航 -->
+<!-- 命令面板 Cmd+K（v2026.08 新增） -->
+<div class="cmd-palette" id="cmdPalette" aria-hidden="true">
+  <div class="cmd-backdrop" id="cmdBackdrop"></div>
+  <div class="cmd-panel" role="dialog" aria-label="全局搜索">
+    <div class="cmd-searchbar">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="cmd-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="cmdInput" placeholder="搜索计算器、产品、规则、系数…（支持中文/数字）" autocomplete="off" spellcheck="false">
+      <kbd class="cmd-kbd">ESC</kbd>
+    </div>
+    <div class="cmd-results" id="cmdResults">
+      <div class="cmd-hint">
+        <div class="cmd-hint-title">💡 快捷命令</div>
+        <div class="cmd-hint-list">
+          <div><kbd>↑↓</kbd> 选择</div>
+          <div><kbd>↵</kbd> 打开</div>
+          <div><kbd>ESC</kbd> 关闭</div>
+          <div>输入「<b>校园</b>」「<b>专线</b>」「<b>99</b>」试试</div>
+        </div>
+      </div>
+    </div>
+    <div class="cmd-footer">
+      <span><kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>K</kbd> 随时打开</span>
+      <span class="cmd-count" id="cmdCount"></span>
+    </div>
+  </div>
+</div>
 <div class="bottom-nav" id="bottomNav">
   <div class="bottom-nav-item active" data-tab="products">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>
@@ -308,8 +333,22 @@
         <div class="calc-result-num" id="calcResultNum">0</div>
         <div class="calc-result-label">预计积分</div>
         <div class="calc-detail" id="calcDetail"></div>
-        <button class="copy-btn" id="copyResultBtn">复制结果</button>
-        <button class="share-btn" id="shareResultBtn">分享</button>
+        <!-- 公式分步推导（v2026.08 新增） -->
+        <div class="calc-steps" id="calcSteps"></div>
+        <div class="calc-result-actions">
+          <button class="copy-btn" id="copyResultBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span class="btn-text">复制结果</span>
+          </button>
+          <button class="copy-btn" id="shareResultBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span class="btn-text">复制分享链接</span>
+          </button>
+          <button class="copy-btn copy-btn-export" id="exportPdfBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+            <span class="btn-text">导出 PDF</span>
+          </button>
+        </div>
       </div>
     </div>
     <!-- 计算历史 -->
