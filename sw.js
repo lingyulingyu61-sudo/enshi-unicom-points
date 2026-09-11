@@ -1,4 +1,4 @@
-var CACHE_NAME = 'enshi-unicom-points-v7';
+var CACHE_NAME = 'enshi-unicom-points-v8';
 var CACHE_FILES = [
   './',
   './index.html',

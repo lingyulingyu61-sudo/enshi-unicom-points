@@ -695,7 +695,7 @@ function updateCalcForm(){
   });
   html+='</div>';
   if(cfg.note)html+='<div class="note-box">'+cfg.note+'</div>';
-  html+='<button class="search-btn" style="margin-top:16px;" id="calcBtn">计算积分</button>';
+  html+='<button class="search-btn" style="margin-top:16px;" id="calcBtn" title="点击保存本条计算到历史记录（输入框实时变化为预览，不保存历史）">保存并计算</button>';
   area.innerHTML=html;
   // 云犀包下拉：选中后自动带出月费
   var pkgSel=document.getElementById('calc_pkg');
@@ -703,27 +703,28 @@ function updateCalcForm(){
     pkgSel.addEventListener('change',function(){
       var rentEl=document.getElementById('calc_rent');
       if(rentEl&&this.value)rentEl.value=this.value;
-      doCalc();
+      // 选中即触发实时预览，不写历史
+      doCalc({save:false});
     });
   }
-  // 绑定按钮
-  document.getElementById('calcBtn').addEventListener('click',doCalc);
-  // 输入防抖计算：停止输入 600ms 后再算，避免连击产生大量历史记录
-  var debouncedCalc=debounce(doCalc,600);
+  // 绑定按钮（提交计算，写历史）
+  document.getElementById('calcBtn').addEventListener('click',function(){doCalc({save:true});});
+  // 输入防抖计算：停止输入 600ms 后再算（预览模式，不写历史），避免连击产生大量历史记录
+  var debouncedCalc=debounce(function(){doCalc({save:false});},600);
   document.querySelectorAll('#calcFormArea input').forEach(function(el){
     el.addEventListener('input',debouncedCalc);
     el.addEventListener('keydown',function(e){
-      if(e.key==='Enter'){doCalc();}
+      if(e.key==='Enter'){doCalc({save:true});}
     });
-    if(el.type==='checkbox')el.addEventListener('change',doCalc);
+    if(el.type==='checkbox')el.addEventListener('change',function(){doCalc({save:false});});
   });
   document.querySelectorAll('#calcFormArea select').forEach(function(el){
-    el.addEventListener('change',doCalc);
+    el.addEventListener('change',function(){doCalc({save:false});});
   });
 }
 
 // ===== 计算积分 =====
-function doCalc(){
+function doCalc(opts){
   var type=document.getElementById('calcType').value;
   if(!type)return;
   function v(id){var el=document.getElementById('calc_'+id);return el?(parseFloat(el.value)||0):0;}
@@ -927,10 +928,36 @@ function doCalc(){
       break;}
   }
   document.getElementById('calcResult').style.display='block';
-  document.getElementById('calcResultNum').textContent=points.toFixed(1);
+  // 用 countUp 动画展示结果（视觉精致化）
+  animateNumber(document.getElementById('calcResultNum'),points,1);
   document.getElementById('calcDetail').textContent=detail;
-  // 保存到历史
-  saveToHistory(type,points.toFixed(1),detail);
+  // 保存到历史（仅在提交模式下：按钮点击或回车）
+  if(opts&&opts.save)saveToHistory(type,points.toFixed(1),detail);
+}
+
+// ===== 数字 countUp 动画 =====
+// 接受目标数字、小数位数、动画时长（ms），带 prefers-reduced-motion 兼容
+// 同步立即写入目标值（便于自动化测试读取），再播放从 0 到目标的动画作为视觉装饰
+function animateNumber(el,target,decimals,dur){
+  if(!el)return;
+  decimals=typeof decimals==='number'?decimals:1;
+  dur=dur||700;
+  var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finalStr=target.toFixed(decimals);
+  // 同步设置目标值（测试 + 无障碍读屏都能立即读到正确值）
+  el.textContent=finalStr;
+  el.setAttribute('data-final',finalStr);
+  if(prefersReduced)return;
+  var start=0,t0=null;
+  function step(ts){
+    if(t0===null)t0=ts;
+    var p=Math.min(1,(ts-t0)/dur);
+    var e=1-Math.pow(1-p,3);  // ease-out cubic
+    el.textContent=(start+(target-start)*e).toFixed(decimals);
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=finalStr;
+  }
+  requestAnimationFrame(step);
 }
 
 // ===== 复制结果 =====
@@ -1883,45 +1910,112 @@ function renderFormulaCard(){
   var body=document.getElementById('formulaBody');
   if(!body)return;
   var formulas=[
-    {cat:'A',tag:'移网单卡',color:'#e3f2fd',txt:'#1565c0',formula:'实际月租 × 异网系数(0.8/1.2) × 首缴系数(0/1) × 渠道分享系数'},
-    {cat:'A',tag:'企业工作号/联通魔方',color:'#e3f2fd',txt:'#1565c0',formula:'实际月租 × 异网系数 × 首缴系数 × 专项系数(2/1.5/1.1)'},
-    {cat:'A',tag:'移网单卡(校园)',color:'#e3f2fd',txt:'#1565c0',formula:'产品套餐月租 × 异网系数 × 首缴系数(1倍月租) × 校区系数(0.9/1/1.2)'},
-    {cat:'A',tag:'融合业务',color:'#e3f2fd',txt:'#1565c0',formula:'新移+新宽: 主套餐实际月费×1.2; 新移+老宽/老移+新宽: ×1 或 ×0.5'},
-    {cat:'A',tag:'校园融合',color:'#e3f2fd',txt:'#1565c0',formula:'融合主套餐实际月费 × 1.2(或1/0.5) × 校区系数'},
-    {cat:'A',tag:'2B/2B2C金融合约',color:'#e3f2fd',txt:'#1565c0',formula:'移网标准分值 × 2'},
-    {cat:'A',tag:'语音/流量包',color:'#e3f2fd',txt:'#1565c0',formula:'生效当月实际月租 × 1（需≥10元，6个月1次）'},
-    {cat:'A',tag:'联通云犀',color:'#e3f2fd',txt:'#1565c0',formula:'订购的云犀包月费 × 1（6个月1次）'},
-    {cat:'A',tag:'5G随行专网',color:'#e3f2fd',txt:'#1565c0',formula:'随行专网包月费 × 1'},
-    {cat:'A',tag:'隐私工作号',color:'#e3f2fd',txt:'#1565c0',formula:'工作号平台月租 × 1 × 项目号码数（月租≥25元）'},
-    {cat:'A',tag:'高价值移网(在网)',color:'#e3f2fd',txt:'#1565c0',formula:'T+6~T+15月: 净月费 × 0.2（入网月租[39,129)）/ × 0.5（[129,∞)）'},
-    {cat:'A',tag:'高价值移网(校园)',color:'#e3f2fd',txt:'#1565c0',formula:'T+6~T+15月: 净月费 × 0.2 × 校区系数'},
-    {cat:'A',tag:'价值经营',color:'#e3f2fd',txt:'#1565c0',formula:'剔除优惠后提升差值 × 倍数(2/2.5/3)，T+4月核算'},
-    {cat:'B',tag:'专线新发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'发展积分=月租×14% + 回款积分=(后付×0.6+预付×0.8)×10%，月封顶8000'},
-    {cat:'B',tag:'专线存量续签',color:'#f3e5f5',txt:'#7b1fa2',formula:'(后付×0.6+预付×0.8) × 折扣系数 × 3%，月封顶5000'},
-    {cat:'B',tag:'单宽新发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'套餐月资费 × 1 × 趸交系数(0.8/1.1/1.2)'},
-    {cat:'B',tag:'单宽续费',color:'#f3e5f5',txt:'#7b1fa2',formula:'套餐月资费 × 5%（入网13-36月，次月核发）'},
-    {cat:'B',tag:'智企光网FTTO',color:'#f3e5f5',txt:'#7b1fa2',formula:'趸交: 首月出账×50%; 分月: 首月出账×1 + 月出账×20%×12'},
-    {cat:'B',tag:'智企光网-焕新FTTO',color:'#f3e5f5',txt:'#7b1fa2',formula:'趸交: 首月出账×100%; 分月: 出账×100% + 月出账×20%×5; L版12期100/24期150'},
-    {cat:'B',tag:'联通智家',color:'#f3e5f5',txt:'#7b1fa2',formula:'50分/户（T+1月核发，沿用原规则）'},
-    {cat:'B',tag:'固话/语音发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'月出账 × 12%，单月单号封顶2000（入网1-12月）'},
-    {cat:'B',tag:'固话/语音续费',color:'#f3e5f5',txt:'#7b1fa2',formula:'月出账 × 5%，单月单号封顶1000（入网13-24月）'},
-    {cat:'C',tag:'标品(毛利X≥20%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×7%（封顶5000）; 存量: 实缴×5%（封顶3000）'},
-    {cat:'C',tag:'标品(20%>X≥10%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×5%（封顶3000）; 存量: 实缴×3.5%（封顶2000）'},
-    {cat:'C',tag:'标品(X＜10%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量=(X/标准毛利率)×实缴×每元积分（封顶3000）; 存量=增量×50%（封顶1000）'},
-    {cat:'C',tag:'物联网连接',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×7%（封顶5000）; 存量: 实缴×3%（封顶3000）'},
-    {cat:'C',tag:'新兴ICT',color:'#e8f5e9',txt:'#2e7d32',formula:'计收金额每1000元/1分（≤200万，年封顶10000）；>200万不参与'},
-    {cat:'D',tag:'要客市场动作',color:'#fff3e0',txt:'#e65100',formula:'拜访频次100(≥16次满分) + 覆盖率50(≥20%满分) + 商机20/条 + 资料完整性10/户'},
-    {cat:'E',tag:'商企市场动作',color:'#fff3e0',txt:'#e65100',formula:'客户拜访100(≥10次满分) + 销售行为100(潜客5/商机10/签约30) + 数字化工具100(每次20)'},
-    {cat:'F',tag:'校园市场动作',color:'#fff3e0',txt:'#e65100',formula:'客户拜访100(≥10次满分) + 营销动作100(圈校50/场20) + 商机录入100(20/条)'}
+    {cat:'A',tag:'移网单卡',color:'#e3f2fd',txt:'#1565c0',formula:'实际月租 × 异网系数(0.8/1.2) × 首缴系数(0/1) × 渠道分享系数',calc:'mobile_single'},
+    {cat:'A',tag:'企业工作号/联通魔方',color:'#e3f2fd',txt:'#1565c0',formula:'实际月租 × 异网系数 × 首缴系数 × 专项系数(2/1.5/1.1)',calc:'mobile_enterprise_num'},
+    {cat:'A',tag:'移网单卡(校园)',color:'#e3f2fd',txt:'#1565c0',formula:'产品套餐月租 × 异网系数 × 首缴系数(1倍月租) × 校区系数(0.9/1/1.2)',calc:'mobile_school'},
+    {cat:'A',tag:'融合业务',color:'#e3f2fd',txt:'#1565c0',formula:'新移+新宽: 主套餐实际月费×1.2; 新移+老宽/老移+新宽: ×1 或 ×0.5',calc:'mobile_fusion'},
+    {cat:'A',tag:'校园融合',color:'#e3f2fd',txt:'#1565c0',formula:'融合主套餐实际月费 × 1.2(或1/0.5) × 校区系数',calc:'mobile_school_fusion'},
+    {cat:'A',tag:'2B/2B2C金融合约',color:'#e3f2fd',txt:'#1565c0',formula:'移网标准分值 × 2',calc:'mobile_finance'},
+    {cat:'A',tag:'语音/流量包',color:'#e3f2fd',txt:'#1565c0',formula:'生效当月实际月租 × 1（需≥10元，6个月1次）',calc:'mobile_voice'},
+    {cat:'A',tag:'联通云犀',color:'#e3f2fd',txt:'#1565c0',formula:'订购的云犀包月费 × 1（6个月1次）',calc:'mobile_cloudxi'},
+    {cat:'A',tag:'5G随行专网',color:'#e3f2fd',txt:'#1565c0',formula:'随行专网包月费 × 1',calc:'mobile_5g'},
+    {cat:'A',tag:'隐私工作号',color:'#e3f2fd',txt:'#1565c0',formula:'工作号平台月租 × 1 × 项目号码数（月租≥25元）',calc:'mobile_worknum'},
+    {cat:'A',tag:'高价值移网(在网)',color:'#e3f2fd',txt:'#1565c0',formula:'T+6~T+15月: 净月费 × 0.2（入网月租[39,129)）/ × 0.5（[129,∞)）',calc:'mobile_highvalue'},
+    {cat:'A',tag:'高价值移网(校园)',color:'#e3f2fd',txt:'#1565c0',formula:'T+6~T+15月: 净月费 × 0.2 × 校区系数',calc:'mobile_highvalue_school'},
+    {cat:'A',tag:'价值经营',color:'#e3f2fd',txt:'#1565c0',formula:'剔除优惠后提升差值 × 倍数(2/2.5/3)，T+4月核算',calc:'mobile_value'},
+    {cat:'B',tag:'专线新发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'发展积分=月租×14% + 回款积分=(后付×0.6+预付×0.8)×10%，月封顶8000',calc:'fixed_line_new'},
+    {cat:'B',tag:'专线存量续签',color:'#f3e5f5',txt:'#7b1fa2',formula:'(后付×0.6+预付×0.8) × 折扣系数 × 3%，月封顶5000',calc:'fixed_line_renew'},
+    {cat:'B',tag:'单宽新发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'套餐月资费 × 1 × 趸交系数(0.8/1.1/1.2)',calc:'fixed_broadband_new'},
+    {cat:'B',tag:'单宽续费',color:'#f3e5f5',txt:'#7b1fa2',formula:'套餐月资费 × 5%（入网13-36月，次月核发）',calc:'fixed_broadband_renew'},
+    {cat:'B',tag:'智企光网FTTO',color:'#f3e5f5',txt:'#7b1fa2',formula:'趸交: 首月出账×50%; 分月: 首月出账×1 + 月出账×20%×12',calc:'fixed_ftto'},
+    {cat:'B',tag:'智企光网-焕新FTTO',color:'#f3e5f5',txt:'#7b1fa2',formula:'趸交: 首月出账×100%; 分月: 出账×100% + 月出账×20%×5; L版12期100/24期150',calc:'fixed_ftto_new'},
+    {cat:'B',tag:'联通智家',color:'#f3e5f5',txt:'#7b1fa2',formula:'50分/户（T+1月核发，沿用原规则）',calc:'fixed_zhijia'},
+    {cat:'B',tag:'固话/语音发展',color:'#f3e5f5',txt:'#7b1fa2',formula:'月出账 × 12%，单月单号封顶2000（入网1-12月）',calc:'fixed_voice_new'},
+    {cat:'B',tag:'固话/语音续费',color:'#f3e5f5',txt:'#7b1fa2',formula:'月出账 × 5%，单月单号封顶1000（入网13-24月）',calc:'fixed_voice_renew'},
+    {cat:'C',tag:'标品(毛利X≥20%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×7%（封顶5000）; 存量: 实缴×5%（封顶3000）',calc:'calc_std_high'},
+    {cat:'C',tag:'标品(20%>X≥10%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×5%（封顶3000）; 存量: 实缴×3.5%（封顶2000）',calc:'calc_std_mid'},
+    {cat:'C',tag:'标品(X＜10%)',color:'#e8f5e9',txt:'#2e7d32',formula:'增量=(X/标准毛利率)×实缴×每元积分（封顶3000）; 存量=增量×50%（封顶1000）',calc:'calc_std_low'},
+    {cat:'C',tag:'物联网连接',color:'#e8f5e9',txt:'#2e7d32',formula:'增量: 实缴×7%（封顶5000）; 存量: 实缴×3%（封顶3000）',calc:'calc_iot'},
+    {cat:'C',tag:'新兴ICT',color:'#e8f5e9',txt:'#2e7d32',formula:'计收金额每1000元/1分（≤200万，年封顶10000）；>200万不参与',calc:'calc_ict'},
+    {cat:'D',tag:'要客市场动作',color:'#fff3e0',txt:'#e65100',formula:'拜访频次100(≥16次满分) + 覆盖率50(≥20%满分) + 商机20/条 + 资料完整性10/户',calc:'act_dkh'},
+    {cat:'E',tag:'商企市场动作',color:'#fff3e0',txt:'#e65100',formula:'客户拜访100(≥10次满分) + 销售行为100(潜客5/商机10/签约30) + 数字化工具100(每次20)',calc:'act_sq'},
+    {cat:'F',tag:'校园市场动作',color:'#fff3e0',txt:'#e65100',formula:'客户拜访100(≥10次满分) + 营销动作100(圈校50/场20) + 商机录入100(20/条)',calc:'act_xy'}
   ];
   var html='';
   formulas.forEach(function(f){
-    html+='<div class="formula-item">';
-    html+='<div class="formula-item-title"><span class="formula-item-tag" style="background:'+f.color+';color:'+f.txt+'">'+f.cat+'</span>'+f.tag+'</div>';
+    html+='<div class="formula-item" data-calc-type="'+f.calc+'" title="点击跳到对应计算器并预填示例值">';
+    html+='<div class="formula-item-title"><span class="formula-item-tag" style="background:'+f.color+';color:'+f.txt+'">'+f.cat+'</span><span class="formula-item-tag-name">'+f.tag+'</span><span class="formula-item-cta">看个例子 →</span></div>';
     html+='<div class="formula-item-formula">'+f.formula+'</div>';
     html+='</div>';
   });
   body.innerHTML=html;
+  // 绑定点击：跳到计算器 tab，选中对应计算类型，自动填充示例值
+  body.querySelectorAll('.formula-item').forEach(function(item){
+    item.addEventListener('click',function(){
+      var ct=this.getAttribute('data-calc-type');
+      if(!ct)return;
+      var sel=document.getElementById('calcType');
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===ct){sel.selectedIndex=i;break;}
+      }
+      sel.classList.add('calc-preset');
+      switchTab('calculator');
+      updateCalcForm();
+      // 自动填充示例值（轻量预填，每种计算类型给一组示意数字）
+      fillCalcExample(ct);
+      // 触发预览计算（不写历史）
+      doCalc({save:false});
+      // 滚动到计算器
+      var cr=document.getElementById('tab-calculator');
+      if(cr&&cr.scrollIntoView)cr.scrollIntoView({behavior:'smooth',block:'start'});
+      showToast('已带入示例：'+calcTypeLabels[ct]||ct);
+    });
+  });
+}
+// 示例值填充（每种计算类型给一组示意数字，方便快速看公式效果）
+function fillCalcExample(ct){
+  var examples={
+    // A 类 移网/融合
+    mobile_single:{rent:99,isUnicom:'1.2',firstPay:'1'},
+    mobile_enterprise_num:{rent:123,isUnicom:'1.2',firstPay:'1',special:'2'},
+    mobile_school:{rent:50,isUnicom:'1.2',firstPay:'1',campus:'1.2'},
+    mobile_fusion:{rent:129,mode:'1.2',isUnicom:'1.2',firstPay:'1'},
+    mobile_school_fusion:{rent:99,mode:'1.2',campus:'1',isUnicom:'1.2',firstPay:'1'},
+    mobile_finance:{rent:99,isUnicom:'1.2',firstPay:'1'},
+    mobile_voice:{rent:30},
+    mobile_cloudxi:{pkg:3,rent:50},
+    mobile_5g:{rent:30},
+    mobile_worknum:{rent:25,count:10},
+    mobile_highvalue:{rent:99,band:'0.2',months:'10'},
+    mobile_highvalue_school:{rent:39,campus:'1',months:'10'},
+    mobile_value:{diff:20,level:'3'},
+    // B 类 固网
+    fixed_line_new:{rent:500,discount:'1',postPaid:500,prePaid:0},
+    fixed_line_renew:{postPaid:500,prePaid:0,discount:'1'},
+    fixed_broadband_new:{rent:99,payType:'1.1'},
+    fixed_broadband_renew:{rent:99},
+    fixed_ftto:{bill:200,ver:'lump50'},
+    fixed_ftto_new:{bill:200,ver:'lump100'},
+    fixed_zhijia:{count:1},
+    fixed_voice_new:{bill:300},
+    fixed_voice_renew:{bill:300},
+    // C 类 标品
+    calc_std_high:{amount:100000,type:'7'},
+    calc_std_mid:{amount:100000,type:'5'},
+    calc_std_low:{amount:100000,actualMargin:8,stdMargin:20,type:'inc'},
+    calc_iot:{amount:100000,type:'7'},
+    calc_ict:{amount:50},
+    // D/E/F 市场动作
+    act_dkh:{visitFreq:16,visitCov:20,oppCount:5,custCount:5},
+    act_sq:{visitCount:10,newCust:3,oppCount:5,signCount:1,toolCount:5},
+    act_xy:{visitCount:10,schoolCount:1,eventCount:3,oppCount:5}
+  };
+  var ex=examples[ct];
+  if(!ex)return;
+  Object.keys(ex).forEach(function(k){
+    var el=document.getElementById('calc_'+k);
+    if(el)el.value=ex[k];
+  });
 }
 document.getElementById('formulaHeader').addEventListener('click',function(){
   var body=document.getElementById('formulaBody');
@@ -1959,7 +2053,8 @@ function renderYunxiTable(){
         for(var j=0;j<pkg.options.length;j++){if(pkg.options[j].value===this.getAttribute('data-yx-fee')){pkg.selectedIndex=j;break;}}
       }
       if(rent)rent.value=this.getAttribute('data-yx-fee');
-      doCalc();
+      // 一键带入属于"提交计算"语义，写历史
+      doCalc({save:true});
       showToast('已带入云犀包：'+this.getAttribute('data-yx-name'));
     });
   });
@@ -2092,8 +2187,46 @@ if('serviceWorker' in navigator){
   });
 }
 
-// ===== 初始化 =====
+// ===== 顶栏数字徽章 =====
+function updateNavBadges(){
+  var counts={
+    products:APP_DATA.products.length,
+    rules:APP_DATA.rules.length,
+    coefficients:APP_DATA.coefficients.length,
+    calcTypes:Object.keys(calcTypeLabels).length
+  };
+  document.querySelectorAll('[data-nav-count]').forEach(function(el){
+    var k=el.getAttribute('data-nav-count');
+    if(counts[k]!==undefined)el.textContent=counts[k];
+  });
+}
+
+// ===== Hero 数字 countUp =====
+function animateHeroStats(){
+  var nodes=document.querySelectorAll('.hero-stat-num[data-count]');
+  if(!nodes.length)return;
+  var prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  nodes.forEach(function(el){
+    var target=parseInt(el.getAttribute('data-count'),10)||0;
+    if(prefersReduced){el.textContent=target;return;}
+    var start=0,t0=null,dur=900;
+    function step(ts){
+      if(t0===null)t0=ts;
+      var p=Math.min(1,(ts-t0)/dur);
+      // 缓出三次方
+      var e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(start+(target-start)*e);
+      if(p<1)requestAnimationFrame(step);
+      else el.textContent=target;
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+
 initTheme();
+updateNavBadges();
+animateHeroStats();
 renderProductStats();
 renderCategoryFilters();
 renderProducts();
