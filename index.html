@@ -770,5 +770,129 @@
 </div>
 <script src="data.js"></script>
 <script src="app.js"></script>
-</body>
+</body><!-- ======================================================= -->
+<!-- ========== 月度业绩小本本开始 (直接粘贴，啥都不用改) ========== -->
+<!-- ======================================================= -->
+<style>
+  .my-perf-board { background: #fff; margin: 30px auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 100%; border: 1px solid #eee; }
+  .my-perf-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+  .my-perf-header h3 { margin: 0; color: #333; font-size: 18px; }
+  .my-perf-btn { background: #007aff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+  .my-perf-list { margin-top: 15px; max-height: 400px; overflow-y: auto; }
+  .my-perf-item { display: flex; justify-content: space-between; padding: 12px; background: #f8f9fa; margin-bottom: 8px; border-left: 4px solid #007aff; border-radius: 4px; }
+  .my-perf-del { color: #f56c6c; cursor: pointer; font-size: 12px; margin-left: 15px; text-decoration: underline; }
+</style>
+
+<div class="my-perf-board">
+  <div class="my-perf-header">
+    <h3>🏆 我的月度业绩本</h3>
+    <div>
+       目标: <input type="number" id="perf-goal" value="5000" style="width:70px; text-align:center; border:1px solid #ccc; border-radius:4px; padding:3px;"> 分
+    </div>
+  </div>
+  
+  <div style="margin-bottom:10px; font-size:14px; color:#666;">
+    已完成: <strong id="perf-total" style="color:#e6a23c; font-size:22px;">0</strong> 分
+    <span id="perf-hint" style="float:right; color:#999; margin-top:5px;"></span>
+  </div>
+  
+  <div style="background:#eee; height:12px; border-radius:6px; width:100%; overflow:hidden; margin-bottom: 15px;">
+    <div id="perf-bar" style="background:#007aff; height:100%; width:0%; transition: width 0.4s ease;"></div>
+  </div>
+
+  <button class="my-perf-btn" onclick="addPerfRecord()" style="width: 100%; margin-bottom: 10px;">
+    ➕ 记入一笔新业绩
+  </button>
+
+  <div id="perf-list" class="my-perf-list"></div>
+  
+  <button onclick="exportPerfCSV()" style="margin-top:15px; background:#f4f4f5; border:1px solid #ddd; padding:6px 12px; border-radius:4px; cursor:pointer; font-size: 12px;">
+    ⬇️ 导出本月对账单 (CSV)
+  </button>
+</div>
+
+<script>
+  const PerfApp = {
+    data: { goal: 5000, records: [], month: new Date().getMonth() },
+    init() {
+      const saved = JSON.parse(localStorage.getItem('unicom_perf') || 'null');
+      if (saved) {
+         if (saved.month !== new Date().getMonth()) {
+             alert("系统提示：新的一月开始了！上月业绩已为您自动清空，重新开始计算。");
+         } else {
+             this.data = saved;
+         }
+      }
+      this.render();
+      document.getElementById('perf-goal').value = this.data.goal;
+      document.getElementById('perf-goal').addEventListener('change', (e) => {
+         this.data.goal = e.target.value || 5000;
+         this.save(); this.render();
+      });
+    },
+    save() { localStorage.setItem('unicom_perf', JSON.stringify(this.data)); },
+    render() {
+      let total = this.data.records.reduce((s, r) => s + r.points, 0);
+      document.getElementById('perf-total').innerText = total.toFixed(1);
+      document.getElementById('perf-bar').style.width = Math.min((total/this.data.goal)*100, 100) + '%';
+      let diff = (this.data.goal - total).toFixed(1);
+      document.getElementById('perf-hint').innerText = diff > 0 ? `距离目标还差 ${diff} 分` : '🎉 本月已达标！';
+      
+      let listHtml = '';
+      this.data.records.forEach(r => {
+         listHtml += `<div class="my-perf-item">
+           <div><b style="color:#333;">${r.name}</b> <br><small style="color:#999">${r.time}</small></div>
+           <div style="display:flex; align-items:center;"><b style="color:#e6a23c; font-size:16px;">+${r.points}</b><span class="my-perf-del" onclick="PerfApp.del(${r.id})">删除</span></div>
+         </div>`;
+      });
+      document.getElementById('perf-list').innerHTML = listHtml || '<div style="text-align:center; color:#999; padding:20px;">本月暂无办理记录</div>';
+    },
+    add(name, pts) {
+      let now = new Date();
+      let timeStr = `${now.getMonth()+1}月${now.getDate()}日 ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+      this.data.records.unshift({ id: Date.now(), name: name, points: parseFloat(pts), time: timeStr });
+      this.save(); this.render();
+    },
+    del(id) {
+      if(confirm("确定要删除这条办理记录吗？")) {
+         this.data.records = this.data.records.filter(r => r.id !== id);
+         this.save(); this.render();
+      }
+    }
+  };
+  
+  PerfApp.init();
+
+  function addPerfRecord() {
+    // 自动抓取网页上的业务名称（抓不到就默认叫"新增业务"）
+    let defaultName = "新增业务";
+    let selectEl = document.querySelector('select');
+    if (selectEl && selectEl.selectedIndex >= 0) {
+        defaultName = selectEl.options[selectEl.selectedIndex].text;
+    }
+    
+    // 弹出输入框，确认名称和分数，这样就不用去管你网页里的 HTML ID 叫什么了
+    let name = prompt("确认办理的业务名称：", defaultName);
+    if (!name) return;
+    
+    let pts = prompt(`请输入【${name}】算出的总积分：`, "");
+    if (pts && !isNaN(pts) && parseFloat(pts) > 0) {
+        PerfApp.add(name, pts);
+    } else {
+        alert("积分输入无效或已取消录入。");
+    }
+  }
+
+  function exportPerfCSV() {
+    if(PerfApp.data.records.length === 0) return alert("本月还没有记录哦！");
+    let csv = "data:text/csv;charset=utf-8,\uFEFF办理时间,业务名称,获得积分\n" + 
+              PerfApp.data.records.map(r => `${r.time},${r.name},${r.points}`).join("\n");
+    let link = document.createElement("a");
+    link.href = encodeURI(csv); link.download = `我的业绩记录.csv`;
+    link.click();
+  }
+</script>
+<!-- ======================================================= -->
+<!-- ========== 月度业绩小本本结束 =========================== -->
+<!-- ======================================================= -->
 </html>
